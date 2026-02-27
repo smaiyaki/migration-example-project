@@ -198,3 +198,11 @@ Specifically, warnings like these are expected. We're working on better ways to 
 ../../src/main/typescript/behaviours.d.ts(388,5): error TS1038: A 'declare' modifier cannot be used in an already ambient context.
 ../../src/main/typescript/behaviourA.ts(14,15): error TS1378: Top-level 'await' expressions are only allowed when the 'module' option is set to 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', 'nodenext', or 'preserve', and the 'target' option is set to 'es2017' or higher.
 ```
+
+# Optional Analytics
+The Gradle plugin collects some high-level analytics about its usage. 
+We use these to gauge how people are getting on with the Dev and Deployment tool and make it work better.
+You can disable these by adding the following property to gradle.properties:
+```properties
+com.adaptavist.scriptrunner.deployment.analytics.enabled=false
+```
