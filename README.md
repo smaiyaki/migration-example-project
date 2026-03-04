@@ -84,6 +84,13 @@ Any IDE with Gradle and Groovy support can add value to this project, but we
 recommend [IntelliJ](https://www.jetbrains.com/idea/download/?section=mac). The free Community Edition supports
 everything that you need to use this project.
 
+Double-check that the JDK IntelliJ is using matches the one that you are using. There will be a couple of places to check:
+* The [IntelliJ Gradle Project Settings](https://www.jetbrains.com/help/idea/gradle-settings.html)
+* The [IntelliJ Project Structure Settings](https://www.jetbrains.com/help/idea/project-settings-and-structure.html)
+
+While IntelliJ will typically pickup and use sensible defaults based on your environment and this project, you may have
+different defaults, especially if you're using IntelliJ in other projects.
+
 ## Automated Deployment
 
 Scripts and their configuration can be deployed to the configured cloud instance using various Gradle tasks.
