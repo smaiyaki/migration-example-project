@@ -239,7 +239,44 @@ workflows:
                 description: "Check if the issue description contain disallowed words"
                 expression: "!issue.description.plainText.includes('disallowed')"
                 enabled: true
-
+  - name: "New Workflow With Conditions"
+    transitions:
+      - name: "In Progress"
+        conditions:
+          - parameters:
+                id: "flat-cond-1"
+                config:
+                  uuid: "497dcba3-ecbf-4587-a2dd-5eb0665e6880"
+                  description: "Flat root condition"
+                  expression: "true"
+                  enabled: true
+          - groups:
+              - operation: "ANY"
+                conditions:
+                  - parameters:
+                      id: "group-cond-1"
+                      config:
+                        uuid: "50e14f43-dd4e-412f-864d-78943ea28d91"
+                        description: "Grouped condition 1"
+                        expression: "true"
+                        enabled: true
+                  - parameters:
+                      id: "group-cond-2"
+                      config:
+                        uuid: "7edb3b2e-869c-485b-af70-76a934e0fcfd"
+                        description: "Grouped condition 2"
+                        expression: "false"
+                        enabled: true
+                conditionGroups:
+                  - operation: "ALL"
+                    conditions:
+                      - parameters:
+                          id: "nested-cond-1"
+                          config:
+                            uuid: "67e32b59-3348-4dc3-9645-75c60b6f50cc"
+                            description: "Nested subgroup condition"
+                            expression: "issue.status.name == 'Open'"
+                            enabled: true
 additional-scripts:
   - file: "acme/dev/ConsoleScript1.groovy"
   - file: "acme/dev/ConsoleScript2.groovy"
