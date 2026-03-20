@@ -181,9 +181,9 @@ your workflows already exist in your target Cloud instance. Likewise, we assume 
 conditions, validators, and post functions will exist alongside ScriptRunner workflow functions, but those will not be
 managed in the extensions.yaml file.
 
-There are a few specific limitations to the workflow implementation currently:
-1. [Condition groups](https://support.atlassian.com/jira-cloud-administration/docs/configure-advanced-issue-workflows/#Group-conditions) 
-    are not supported yet.
+If you have ScriptRunner workflow functions in a workflow that aren't part of the Dev and Deployment's configuration file (extensions.yaml),
+the Dev and Deployment tool will log out a warning when you run deployment tasks. It won't hurt anything, but it can be helpful to have all of the
+configuration in one place.
 
 # Known Issues
 
