@@ -1,3 +1,5 @@
+package acme.dev
+
 // Add a user ir group to a project role
 def accountId = '123456:12345a67-bbb1-12c3-dd45-678ee99f99g0'
 def groupName = 'jira-core-users'

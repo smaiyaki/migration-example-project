@@ -1,5 +1,4 @@
-import java.util.Calendar
-import java.util.Locale
+package acme.dev
 
 //Create a Time Logging issue
 def now = Calendar.getInstance()
