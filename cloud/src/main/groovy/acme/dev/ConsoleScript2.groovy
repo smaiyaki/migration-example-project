@@ -1,3 +1,5 @@
+package acme.dev
+
 def myself = Users.getLoggedInUser()
 
 def projectKey = 'TP'

@@ -1,3 +1,5 @@
+package acme.dev
+
 import com.adaptavist.hapi.cloud.jira.issues.Issues
 
 def eventIssue = Issues.getByKey(issue.key as String)

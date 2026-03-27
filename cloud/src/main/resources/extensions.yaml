@@ -4,7 +4,7 @@ scriptfields:
     name: "Date Difference"
     # Possible scriptedFieldType: RICH_TEXT_FIELD, NUMBER_FIELD, TEXT_FIELD, DATE_FIELD, DATETIME_FIELD
     scriptedFieldType: "TEXT_FIELD"
-    path: "CalculateDateDifference.groovy"
+    file: "CalculateDateDifference.groovy"
   - description: "Script should be stored in the Script Manager"
     uuid: "a1a1234a-12a1-12ab-a1a1-11ab1a123456"
     name: "File Scripted Script Field"
@@ -27,7 +27,7 @@ listeners:
     # worklog_deleted, worklog_updated
     events:
       - jira:issue_created
-    path: "CommentOnCreate.groovy"
+    file: "CommentOnCreate.groovy"
     executionUser: ADD_ON
     projects:
       - "JRTWO"
@@ -35,7 +35,7 @@ listeners:
     uuid: "625a3d1c-173a-4938-8874-08c4d05812ec"
     events:
       - jira:issue_created
-    path: "DefinitionOfDoneListener.groovy"
+    file: "DefinitionOfDoneListener.groovy"
     executionUser: ADD_ON
     projects:
       - "JRTWO"
@@ -52,14 +52,14 @@ jobs:
   - uuid: "1b22241f-ada9-4a4e-bce0-0de13a35074c"
     name: "Create time logging issue"
     cronExpression: "0 0 0 1 * ?"
-    path: "CreateTimeLoggingIssue.groovy"
+    file: "CreateTimeLoggingIssue.groovy"
     atlassianUser:
       accountId: "557058:d2e5bd5c-dc49-41eb-a6f0-5e01093666c1"
     enabled: true
   - uuid: "301355c2-292a-43ab-81a6-8d4e6a8f9148"
     name: "Create Release"
     cronExpression: "0 0 0 1,15 * ?"
-    path: "CreateRelease.groovy"
+    file: "CreateRelease.groovy"
     atlassianUser:
       accountId: "557058:d2e5bd5c-dc49-41eb-a6f0-5e01093666c1"
     enabled: true
@@ -67,7 +67,7 @@ jobs:
     name: "JQL Escalation Service"
     cronExpression: "0 0 * ? * *"
     jql: "statusCategory = Done"
-    path: "CommentOnUnresolvedSubtasks.groovy"
+    file: "CommentOnUnresolvedSubtasks.groovy"
     atlassianUser:
       accountId: "557058:d2e5bd5c-dc49-41eb-a6f0-5e01093666c1"
     enabled: true
