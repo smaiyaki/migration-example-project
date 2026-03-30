@@ -82,7 +82,7 @@ jobs:
 behaviours:
   - name: "Test"
     description: "My Behaviour"
-    uuid: "d89c8588-a060-b07c-879f-98cff9c1d26b"
+    uuid: "3fef006e-74ac-4269-8c90-febc05345e48"
     enabled: true
     executionUser: ADD_ON
     config:
@@ -99,7 +99,7 @@ behaviours:
         affectedFields:
           - "summary"
       - fieldName: ""
-        fieldUuid: "81a205f1-721a-4627-a3f2-c9767e1ex3c4"
+        fieldUuid: "3acab36c-89c5-4322-803c-cfcacd0eec9c"
         path: subpackagea/behaviourB.ts
         event:
           - "ONLOAD"
@@ -112,13 +112,12 @@ behaviours:
           - "IssueView"
         affectedFields:
           - "description"
-    projects:
-      - "10002" #TODO: These should be mappable from keys
-    issueTypes:
-      - "10005"
     mappings:
-      "10002":
+      "10200":
         - "10005"
+      "10266":
+        - "10004"
+        - "10007"
 
 workflows:
   - name: "Workflow with file scripts"
