@@ -13,18 +13,52 @@ We recommend cloning to a different subdirectory for each migration you're worki
 ### Install Java
 
 You will also need to have a Java Developer Kit (JDK), version 17 or later installed to work with this project. We
-recommend using [SDKMAN!](https://sdkman.io/) to manage Java installations.
+recommend using [SDKMAN!](https://sdkman.io/) to manage Java installations. For example:
 
-## Set Up Credentials and Point to Instance
+`sdk install java 17-tem`
 
-You need to specify which Jira Cloud instance the scripts should deploy to and the credentials to connect to it.
+### Point the Tool at your site
 
-You will need to update two files to do this. 
+Update the gradle.properties file in this project to point to the Atlassian instance you want to work with.
+```properties
+targetAtlassianSite=https://your-instance-goes-here.atlassian.net
+```
 
-One file will be in this repository: the gradle.properties, which will be shared with anyone who works on this project 
-with you. This is where you will specify the URL that points to your Atlassian Cloud Instance.
+### Authenticate
 
-The other file will be in a different directory, though it will also be named gradle.properties. The directory is 
+To use the Development & Deployment Tool, the machine running the deployment commands has to be able to authenticate
+with the ScriptRunner Cloud backend. There are two ways to do this:
+1. Browser-based authentication (the default)
+2. Saved Atlassian API Tokens
+
+The browser-based path is probably easiest for most users. 
+
+The second is best for people using the Dev & Deployment Tool in Continuous Integration environments who need a durable
+stored credential.
+
+#### Path 1: Browser-based authentication
+
+The first and easiest way to authenticate is to simply run commands and sign in to your Jira instance when a browser 
+window pops up. You'll see a message like the following:
+
+> The ScriptRunner Dev & Deployment Tool is requesting access to your ScriptRunner instance. 
+> This will allow the Gradle plugin to deploy scripts and configurations on your behalf.
+> 
+> Allow / Deny
+
+Choose **Allow** and the Dev & Deployment tool will be able to use a temporary token to make updates as you.
+
+This token expires after a while, so you may have to go through this routine again every day or so.
+
+You can also wipe out the saved token by running `./gradlew clean`.
+
+#### Path 2: Save Developer Credentials
+
+If using the browser-based authentication doesn't work for your environment, you can instead create Atlassian API tokens
+and store them in a private configuration file.
+
+The configuration file you need to update will be in a different directory, from this project,
+though it will also be named gradle.properties like the one you updated earlier. The directory is 
 the [Gradle user home directory](https://docs.gradle.org/current/userguide/directory_layout.html#dir:gradle_user_home),
 which is a hidden directory inside your user home directory. Your user home directory will be in different locations, 
 depending on your operating system. Assuming your username is `me`, it might be /Users/home/me on Mac OSX, 
@@ -35,10 +69,10 @@ private to yourself.
 In that file, you will specify the Atlassian User and Token that allow you to sign in to your Atlassian Cloud Site.
 
 We will refer to the gradle.properties file in your user home directory as `~/.gradle/gradle.properties` for the rest of
-this document.  Different people working on this project will have different credentials. As such, they will each specify their own
-credentials in their user home.
+this document.  Different people working on this project will have different credentials. As such, they will each specify
+their own credentials in their user home, while sharing the site URL in the project's local gradle.properties file.
 
-### Getting the credentials
+##### Get the credentials
 
 Create a new API token from [your Atlassian profile](https://id.atlassian.com/manage-profile/security/api-tokens). We
 recommend creating a regular API token without scopes.
@@ -50,18 +84,13 @@ manager.
 Be as protective of this token as you would any password. Follow best practices and good hygiene for secrets management, 
 including revoking the access token when migration is done.
 
-### Updating the files
+##### Update the files
 
 Update your user home gradle.properties file `~/.gradle/gradle.properties` with the following properties set (without the square brackets):
 
 ```properties
 atlassianUser=[your Adaptavist email address]
 atlassianToken=[your token from the previous step]
-```
-
-Update the gradle.properties file in this project to point to the Atlassian instance you want to work with.
-```properties
-targetAtlassianSite=https://your-instance-goes-here.atlassian.net
 ```
 
 Keeping your credentials in your user home gradle.properties file (`~/.gradle/gradle.properties`) will allow you to
@@ -78,7 +107,7 @@ necessary at all in order to use the Development and Deployment Tool.
 
 The configuration for your Cloud scripts is defined in the cloud/src/main/resources/extensions.yaml file.
 
-## Using an IDE
+## Use an IDE
 
 Any IDE with Gradle and Groovy support can add value to this project, but we
 recommend [IntelliJ](https://www.jetbrains.com/idea/download/?section=mac). The free Community Edition supports
@@ -89,9 +118,9 @@ Double-check that the JDK IntelliJ is using matches the one that you are using. 
 * The [IntelliJ Project Structure Settings](https://www.jetbrains.com/help/idea/project-settings-and-structure.html)
 
 While IntelliJ will typically pickup and use sensible defaults based on your environment and this project, you may have
-different defaults, especially if you're using IntelliJ in other projects.
+different defaults, especially if you're using Java or IntelliJ in other projects.
 
-## Automated Deployment
+## Automate Deployment
 
 Scripts and their configuration can be deployed to the configured cloud instance using various Gradle tasks.
 
@@ -154,7 +183,7 @@ You may want some of the following, depending on the context you are working in:
 | webhookEvent | java.lang.String                                 | Listeners                                                             |
 | timestamp    | java.lang.String                                 | Listeners                                                             |
 
-# Updating the Plugin
+# Get Updates
 
 A Gradle plugin developed by Adaptavist powers deployments in this project. We are actively working on it, so you will 
 need to apply updates to get additional feature support and bugfixes as we release them.
