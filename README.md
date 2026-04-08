@@ -192,7 +192,7 @@ To update, open the `settings.gradle` file in this project and edit this set of 
 
 ```gradle
 plugins {
-    id 'com.adaptavist.scriptrunner.migration-settings' version '0.0.17' // Change this version number to the latest release
+    id 'com.adaptavist.scriptrunner.migration-settings' version '0.2.0' // Change this version number to the latest release
 }
 ```
 

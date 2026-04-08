@@ -80,8 +80,8 @@ jobs:
     enabled: true
 
 behaviours:
-  - name: "Test"
-    description: "My Behaviour"
+  - name: "Test Behavior 1"
+    description: "A basic Behaviour"
     uuid: "3fef006e-74ac-4269-8c90-febc05345e48"
     enabled: true
     executionUser: ADD_ON
@@ -113,11 +113,35 @@ behaviours:
         affectedFields:
           - "description"
     mappings:
-      "10200":
-        - "10005"
-      "10266":
-        - "10004"
-        - "10007"
+      "MARK1":
+        - "Task"
+        - "Story"
+        - "Bug"
+      "PRAH":
+        - "Task"
+  - name: "Test Behavior 2"
+    description: "A basic Behaviour that shows mappings for all projects"
+    uuid: "08669347-45e5-4c89-83ec-5c7b8defbafc"
+    enabled: true
+    executionUser: ADD_ON
+    config:
+      - fieldName: ""
+        fieldUuid: "81a205f1-721a-4627-a3f2-c9767e1e83c4"
+        path: behaviourA.ts
+        event:
+          - "ONLOAD"
+          - "ONCHANGE"
+        viewTypes:
+          - "GIC"
+          - "IssueTransition"
+          - "IssueView"
+        affectedFields:
+          - "summary"
+    mappings:
+      "all":
+        - "Task" # This will include _all_ Work Item Types named "Task". To be more specific and target particular project's Task Work Item Type, use the unique identifier retrieved from the REST API.
+        - "Story"
+        - "Bug"
 
 workflows:
   - name: "Workflow with file scripts"
