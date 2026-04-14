@@ -216,6 +216,16 @@ configuration in one place.
 
 # Known Issues
 
+## Rate Limits
+Both Atlassian and Adaptavist have some rate limits on our APIs.
+
+The place where this is most keenly felt is in workflow deployments. Customers often have a large number of workflows
+and may run into Atlassian's rate limits at scale.
+
+Atlassian's rate limits are documented at https://developer.atlassian.com/cloud/jira/platform/rate-limiting/.
+
+We have plans to build rate limiting into the tool more thoroughly, so watch this space and [our documentation](https://docs.adaptavist.com/sms/latest/scriptrunner-dev-and-deployment-tool/supported-features-and-limitations).
+
 ## TypeScript Compilation Warnings
 
 For Behaviours, the TypeScript compiler may emit some errors during compilation of the TypeScript code into JavaScript. Some of these errors may indicate problems in your script, but some can be safely ignored. 
