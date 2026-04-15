@@ -300,6 +300,31 @@ workflows:
                             description: "Nested subgroup condition"
                             expression: "issue.status.name == 'Open'"
                             enabled: true
+  - name: "Workflow with ordered functions"
+    transitions:
+      - name: "Done"
+        postFunctions:
+          - parameters:
+              id: "9f2a8b0f-6f8e-4d82-b9de-f2f9a960aa61"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.UpdateIssue"
+                uuid: "3e25f42d-08ad-4d79-a6d6-ae7db5da9f1c"
+                description: "Does Nothing!"
+                enabled: true
+                executionUser: "ADD_ON"
+            placement:
+              index: 2
+#              last: true
+#              first: true
+        validators:
+          - parameters:
+              id: "2d6f8e72-f4b0-4d6f-97b6-71895d2ee38a"
+              config:
+                uuid: "e6f9dd6f-c68f-4f39-a95d-3b7aa5cd34ce"
+                description: "Validates Nothing!"
+            placement:
+              first: true
+
 additional-scripts:
   - file: "acme/dev/ConsoleScript1.groovy"
   - file: "acme/dev/ConsoleScript2.groovy"

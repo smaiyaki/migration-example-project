@@ -214,6 +214,18 @@ If you have ScriptRunner workflow functions in a workflow that aren't part of th
 the Dev and Deployment tool will log out a warning when you run deployment tasks. It won't hurt anything, but it can be helpful to have all of the
 configuration in one place.
 
+### Ordering post functions and validators
+
+You can control placement for both `postFunctions` and `validators` by using a `placement` block on a ScriptRunner rule.
+
+Supported placement fields:
+
+- `index` (0-based absolute position)
+- `first`
+- `last`
+
+⚠️ All placement fields are mutually exclusive, only one of them can be used each time.
+
 # Known Issues
 
 ## Rate Limits
