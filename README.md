@@ -31,10 +31,11 @@ with the ScriptRunner Cloud backend. There are two ways to do this:
 1. Browser-based authentication (the default)
 2. Saved Atlassian API Tokens
 
-The browser-based path is probably easiest for most users. 
+The browser-based path is probably easiest for most users, but is currently broken in Google Chrome and browsers based on Chromium.
+We know that sucks, and we're working on it, but there are some blockers. Please bear with us!
 
 The second is best for people using the Dev & Deployment Tool in Continuous Integration environments who need a durable
-stored credential.
+stored credential (or need to work around the above bug for Chrome).
 
 #### Path 1: Browser-based authentication
 
