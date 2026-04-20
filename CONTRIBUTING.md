@@ -16,3 +16,6 @@ can adjust the line in settings.gradle to match the path to where you have that 
 With that, you will be able to try out any changes you make to the plugin.
 
 Make sure to update this patch file when you make a new release!
+
+Also, if you're working from a semi-local development enviromnet, update your gradle.properties file to point at your backend tunnel. For example:
+`srBackendHost=memyselfandi.srdevs.com`
