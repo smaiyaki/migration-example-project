@@ -155,7 +155,6 @@ workflows:
                 uuid: "7d6c5b4a-3e2f-1d0c-9b8a-7f6e5d4c3b2a"
                 enabled: true
                 executionUser: "ADD_ON"
-                condition: ""
                 description: "Add comment to issue"
                 additionalCode:
                   file: "acme/dev/PostFunctionScript.groovy"
@@ -178,6 +177,9 @@ workflows:
                     Issues.getByKey(issue.key.toString()).addComment("Comment created from ScriptRunner on ${LocalDateTime.now()}")
       - name: "In Progress"
         postFunctions:
+          # The actions below provide an example for all of ScriptRunner's built-in workflow functions
+          # See also https://docs.adaptavist.com/sr4jc/latest/features/workflow-rules/perform-actions/built-in-workflow-actions
+          # 1. Modify Work Item (UpdateIssue) — runs a script that updates the current issue
           - parameters:
               id: "5a96894a-204c-416d-8d09-bbbfcb18b8a6"
               config:
@@ -185,10 +187,112 @@ workflows:
                 uuid: "79aecc0f-b4aa-454a-b91b-4a5c104eadda"
                 enabled: true
                 executionUser: "ADD_ON"
-                condition: "true || false"
+                conditionFile: "SimpleBooleanExpression.groovy"
                 description: "Add comment to issue"
                 additionalCode:
                   script: "Issues.getByKey(issue.key.toString()).addComment('Greetings from ScriptRunner')"
+          # 2. Run Script — executes arbitrary Groovy code on transition
+          - parameters:
+              id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.RunScript"
+                uuid: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+                enabled: true
+                executionUser: "ADD_ON"
+                condition: "true || false" # Inline conditions are possible, though using a conditionFile is recommended for code reuse
+                description: "Log the transition to the issue as a comment"
+                additionalCode:
+                  script: |
+                    import java.time.LocalDateTime
+                    def currentIssue = Issues.getByKey(issue.key.toString())
+                    currentIssue.addComment("Issue moved to In Progress at ${LocalDateTime.now()}")
+          # 3. Assign Work Item (AssignToUserInGroup) — assigns to the last assigned user in a role or group
+          - parameters:
+              id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.AssignToUserInGroup"
+                uuid: "d4e5f6a7-b8c9-0123-defa-234567890123"
+                enabled: true
+                executionUser: "ADD_ON"
+                description: "Assign to last user in Developers group"
+                groupName: "jira-software-users"
+                roleId: "" # Space role is optional, but you do need to supply empty string
+          # 4. Clone Work Item (CloneIssue) — clones the issue, optionally into a different project/type
+          - parameters:
+              id: "e5f6a7b8-c9d0-1234-efab-345678901234"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.CloneIssue"
+                uuid: "f6a7b8c9-d0e1-2345-fabc-456789012345"
+                enabled: true
+                executionUser: "ADD_ON"
+                description: "Clone issue into the same project and link it"
+                linkTypeId: "10001" # See ${targetAtlassianSite}/rest/api/3/issueLinkType to get type numbers
+                linkDirection: "Outward"
+                issueTypeId: "" # Numeric ID for the work item type. See ${targetAtlassianSite}/rest/api/3/project/${projectKeyOrId} for types by project or ${targetAtlassianSite}/rest/api/3/issuetype for global issue types
+                projectId: "" # Target space, if cloning to different Space. Leave blank if same as current.
+                additionalCode:
+                  file: "acme/dev/LogSomething.groovy"
+          # 5. Create Sub-task (CreateSubtask) — creates a subtask under the current issue
+          - parameters:
+              id: "a7b8c9d0-e1f2-3456-abcd-567890123456"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.CreateSubtask"
+                uuid: "b8c9d0e1-f2a3-4567-bcde-678901234567"
+                enabled: true
+                executionUser: "ADD_ON"
+                description: "Create a code review subtask"
+                summary: "Code Review"
+                issueTypeId: "10006" # Numeric ID for the work item type. See ${targetAtlassianSite}/rest/api/3/project/${projectKeyOrId} for types by project or ${targetAtlassianSite}/rest/api/3/issuetype for global issue types and look for htose with property subtask: true
+          # 6. Fast-track Transition Work Item (FastTrackIssue) — automatically transitions the current issue
+          - parameters:
+              id: "c9d0e1f2-a3b4-5678-cdef-789012345678"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.FastTrackIssue"
+                uuid: "d0e1f2a3-b4c5-6789-defa-890123456789"
+                enabled: true
+                executionUser: "ADD_ON"
+                description: "Auto-transition to Done if no subtasks"
+                transitionName: "Done"
+                transitionId: "31"
+                comment: "Auto-transitioned by ScriptRunner — no subtasks found"
+          # 7. Send Notification (SendNotification) — sends a custom email notification
+          - parameters:
+              id: "e1f2a3b4-c5d6-7890-efab-901234567890"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.SendNotification"
+                uuid: "f2a3b4c5-d6e7-8901-fabc-012345678901"
+                enabled: true
+                executionUser: "ADD_ON"
+                description: "Notify watchers and assignee that work has started"
+                subject: "Work has started on ${issue.key}"
+                assignee: true
+                watchers: true
+                reporter: false
+                voters: false
+                emailCode: "'<p>Work item <b>' + issue.key + '</b> has been moved to In Progress.</p>'"
+          # 8. Add/Remove from Sprint (SprintTransition) — adds or removes the issue from an active sprint
+          - parameters:
+              id: "a3b4c5d6-e7f8-9012-abcd-123456789abc"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.SprintTransition"
+                uuid: "b4c5d6e7-f8a9-0123-bcde-234567890bcd"
+                enabled: true
+                executionUser: "ADD_ON"
+                description: "Add issue to active sprint on the MARK1 board"
+                action: "add"
+                boardId: "102"
+          # 9. Transition Parent Work Item (TransitionParent) — transitions the parent issue when a subtask moves
+          - parameters:
+              id: "c5d6e7f8-a9b0-1234-cdef-345678901cde"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.TransitionParent"
+                uuid: "d6e7f8a9-b0c1-2345-defa-456789012def"
+                enabled: true
+                executionUser: "ADD_ON"
+                description: "Move parent to In Progress when subtask starts"
+                transitionName: "In Progress"
+                transitionId: "" # Optional input to specify a particular transition when the transitionName is ambiguous
+                comment: "Parent auto-transitioned because a subtask moved to In Progress"
         conditions:
           - parameters:
               id: "4a2d7de4-3b95-40c5-b359-4dab3dd5824a"
