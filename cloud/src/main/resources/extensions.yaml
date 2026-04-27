@@ -291,7 +291,6 @@ workflows:
                 executionUser: "ADD_ON"
                 description: "Move parent to In Progress when subtask starts"
                 transitionName: "In Progress"
-                transitionId: "" # Optional input to specify a particular transition when the transitionName is ambiguous
                 comment: "Parent auto-transitioned because a subtask moved to In Progress"
         conditions:
           - parameters:
