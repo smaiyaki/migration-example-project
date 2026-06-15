@@ -11,7 +11,6 @@ scriptfields:
     scriptedFieldType: "TEXT_FIELD"
     file: "acme/dev/ScriptedFieldScript.groovy"
 
-
 listeners:
   - description: "Add comment on issue creation with support SLA and documentation link"
     uuid: "9d114a5b-5a28-445f-acd9-5adbdcec1ab1"
@@ -29,8 +28,9 @@ listeners:
       - jira:issue_created
     file: "CommentOnCreate.groovy"
     executionUser: ADD_ON
+    executionCondition: "issue.fields['%customField-epicLink%'] != null"
     projects:
-      - "JRTWO"
+      - "%project-jrtwo%"
   - description: "Add a definition of done checklist to an issue on creation"
     uuid: "625a3d1c-173a-4938-8874-08c4d05812ec"
     events:
@@ -54,7 +54,7 @@ jobs:
     cronExpression: "0 0 0 1 * ?"
     file: "CreateTimeLoggingIssue.groovy"
     atlassianUser:
-      accountId: "557058:d2e5bd5c-dc49-41eb-a6f0-5e01093666c1"
+      accountId: "%user-testUser%"
     enabled: true
   - uuid: "301355c2-292a-43ab-81a6-8d4e6a8f9148"
     name: "Create Release"
@@ -215,8 +215,8 @@ workflows:
                 enabled: true
                 executionUser: "ADD_ON"
                 description: "Assign to last user in Developers group"
-                groupName: "jira-software-users"
-                roleId: "" # Space role is optional, but you do need to supply empty string
+                groupName: "%group-devs%"
+                roleId: "%projectRole-member%" # Space role is optional, but you do need to supply empty string
           # 4. Clone Work Item (CloneIssue) — clones the issue, optionally into a different project/type
           - parameters:
               id: "e5f6a7b8-c9d0-1234-efab-345678901234"
@@ -226,10 +226,10 @@ workflows:
                 enabled: true
                 executionUser: "ADD_ON"
                 description: "Clone issue into the same project and link it"
-                linkTypeId: "10001" # See ${targetAtlassianSite}/rest/api/3/issueLinkType to get type numbers
+                linkTypeId: "%issueLinkType-blocks%" # See ${targetAtlassianSite}/rest/api/3/issueLinkType to get type numbers
                 linkDirection: "Outward"
-                issueTypeId: "" # Numeric ID for the work item type. See ${targetAtlassianSite}/rest/api/3/project/${projectKeyOrId} for types by project or ${targetAtlassianSite}/rest/api/3/issuetype for global issue types
-                projectId: "" # Target space, if cloning to different Space. Leave blank if same as current.
+                issueTypeId: "%issueType-task%" # Numeric ID for the work item type. See ${targetAtlassianSite}/rest/api/3/project/${projectKeyOrId} for types by project or ${targetAtlassianSite}/rest/api/3/issuetype for global issue types
+                projectId: "%project-acme%" # Target space, if cloning to different Space. Leave blank if same as current.
                 additionalCode:
                   file: "acme/dev/LogSomething.groovy"
           # 5. Create Sub-task (CreateSubtask) — creates a subtask under the current issue
@@ -242,7 +242,7 @@ workflows:
                 executionUser: "ADD_ON"
                 description: "Create a code review subtask"
                 summary: "Code Review"
-                issueTypeId: "10006" # Numeric ID for the work item type. See ${targetAtlassianSite}/rest/api/3/project/${projectKeyOrId} for types by project or ${targetAtlassianSite}/rest/api/3/issuetype for global issue types and look for htose with property subtask: true
+                issueTypeId: "%issueType-subtask%" # Numeric ID for the work item type. See ${targetAtlassianSite}/rest/api/3/project/${projectKeyOrId} for types by project or ${targetAtlassianSite}/rest/api/3/issuetype for global issue types and look for those with property subtask: true
           # 6. Fast-track Transition Work Item (FastTrackIssue) — automatically transitions the current issue
           - parameters:
               id: "c9d0e1f2-a3b4-5678-cdef-789012345678"
@@ -280,7 +280,7 @@ workflows:
                 executionUser: "ADD_ON"
                 description: "Add issue to active sprint on the MARK1 board"
                 action: "add"
-                boardId: "102"
+                boardId: "%rapidView-mark1%"
           # 9. Transition Parent Work Item (TransitionParent) — transitions the parent issue when a subtask moves
           - parameters:
               id: "c5d6e7f8-a9b0-1234-cdef-345678901cde"
@@ -401,7 +401,7 @@ workflows:
                           config:
                             uuid: "67e32b59-3348-4dc3-9645-75c60b6f50cc"
                             description: "Nested subgroup condition"
-                            expression: "issue.status.name == 'Open'"
+                            expression: "issue.status.name == '%status-open%'"
                             enabled: true
   - name: "Workflow with ordered functions"
     transitions:
@@ -431,3 +431,4 @@ workflows:
 additional-scripts:
   - file: "acme/dev/ConsoleScript1.groovy"
   - file: "acme/dev/ConsoleScript2.groovy"
+  - file: "acme/dev/ConsoleScript3.groovy"
