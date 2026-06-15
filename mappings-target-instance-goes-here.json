@@ -1,0 +1,111 @@
+{
+  "users": {
+    "user-example": {
+      "email/user@example.com": "557058:dc7275d3-0ad6-437b-b868-567dfd922f56"
+    }
+  },
+  "projects": {
+    "project-jrtwo": {
+      "JRTWO": "COR"
+    },
+    "project-acme": {
+      "ACME": "ACME"
+    }
+  },
+  "groups": {
+    "group-devs": {
+      "developers": "jira-developers"
+    },
+    "group-orgAdmins": {
+      "organisation-admins": "org-admins"
+    }
+  },
+  "projectRoles": {
+    "projectRole-viewer": {
+      "10002": "10012"
+    },
+    "projectRole-member": {
+      "10003": "10007"
+    }
+  },
+  "issueLinkTypes": {
+    "issueLinkType-blocks": {
+      "10000": "10000"
+    },
+    "issueLinkType-cloners": {
+      "10001": "10001"
+    }
+  },
+  "issueTypes": {
+    "issueType-task": {
+      "10003": "10006"
+    },
+    "issueType-subtask": {
+      "10004": "10004"
+    },
+    "issueType-idea": {
+      "10006": "10002"
+    }
+  },
+  "rapidViews": {
+    "rapidView-mark1": {
+      "102": "69"
+    },
+    "rapidView-proj2": {
+      "103": "1"
+    }
+  },
+  "priorities": {
+    "priority-high": {
+      "2": "2"
+    },
+    "priority-low": {
+      "4": "4"
+    }
+  },
+  "statuses": {
+    "status-inProgress": {
+      "3": "10015"
+    },
+    "status-open": {
+      "1": "10014"
+    }
+  },
+  "versions": {
+    "version-1-0": {
+      "10030": "10000"
+    },
+    "version-2-0": {
+      "10031": "10001"
+    }
+  },
+  "components": {
+    "component-backend": {
+      "10051": "10001"
+    },
+    "component-frontend": {
+      "10050": "10000  |"
+    }
+  },
+  "resolutions": {
+    "resolution-duplicate": {
+      "1": "10003"
+    },
+    "resolution-cannotReproduce": {
+      "2": "10004"
+    }
+  },
+  "sprints": {
+    "sprint-current": {
+      "42": "1"
+    }
+  },
+  "customFields": {
+    "customField-storyPoints": {
+      "customfield_10016": "customfield_10040"
+    },
+    "customField-epicLink": {
+      "customfield_10018": "customfield_10014"
+    }
+  }
+}

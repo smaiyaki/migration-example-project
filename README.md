@@ -23,6 +23,8 @@ Update the gradle.properties file in this project to point to the Atlassian inst
 ```properties
 targetAtlassianSite=https://your-instance-goes-here.atlassian.net
 ```
+Also rename `mappings-target-instance-goes-here.json` to `mappings-<your instance name>.json` so that `pullMappings` will work.
+
 
 ### Authenticate
 
@@ -121,6 +123,24 @@ Double-check that the JDK IntelliJ is using matches the one that you are using. 
 While IntelliJ will typically pickup and use sensible defaults based on your environment and this project, you may have
 different defaults, especially if you're using Java or IntelliJ in other projects.
 
+## Identifier Mapping (DC → Cloud)
+
+When migrating from Data Center, entity identifiers (custom field IDs, user keys, issue type IDs, etc.) differ in
+Cloud — and IDs can vary between Cloud sites as well. Rather than hard-coding values in scripts or `extensions.yaml`,
+we suggest using `%placeholder%` markers backed by a mapping file that records each DC → Cloud translation.
+
+Run `./gradlew pullMappings` before deploying to replace placeholders with the correct Cloud IDs for your target
+site. See **[MAPPING.md](MAPPING.md)** for the mapping file format, placeholder syntax, and supported entity types.
+
+```bash
+./gradlew pullMappings
+```
+
+> **Run `pullMappings` before any deploy task** if your source files contain `%placeholder%` markers. Deploy tasks
+> will hard-fail if unresolved placeholders are detected.
+
+---
+
 ## Automate Deployment
 
 Scripts and their configuration can be deployed to the configured cloud instance using various Gradle tasks.
@@ -161,6 +181,7 @@ change is correct. For example, some of our pre-configured samples will generate
 For the Gradle task name, listeners are identified by their description. Script fields and script jobs by their name.
 Additional script manager scripts are identified by their file path with forward slashes `/` replaced by hyphens `-`.
 
+You can also get a list of all valid tasks, including individual scripts, running ` ./gradlew cloud:task`
 
 If there are errors in the YAML, the plugin will fail to apply and log out any errors received on any Gradle task.
 
@@ -193,7 +214,7 @@ To update, open the `settings.gradle` file in this project and edit this set of 
 
 ```gradle
 plugins {
-    id 'com.adaptavist.scriptrunner.migration-settings' version '1.1.0' // Change this version number to the latest release
+    id 'com.adaptavist.scriptrunner.migration-settings' version '1.2.0' // Change this version number to the latest release
 }
 ```
 

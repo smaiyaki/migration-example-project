@@ -156,6 +156,12 @@ additional-scripts:
   - file: "acme/dev/ConsoleScript1.groovy"
 ```
 
+## Identifier Mappings
+
+DC entity IDs (custom fields, users, issue types, etc.) don't carry over to Cloud as-is. Use `%alias%` placeholders in scripts and `extensions.yaml`, defined in a mapping file at the project root. Run `./gradlew pullMappings` to resolve them into a `mapped/<subdomain>/` folder; deploy tasks automatically use that folder when present.
+
+See [MAPPING_AC.md](MAPPING_AC.md) for the full spec: mapping file format, placeholder syntax, resolution logic, supported entity types, and validation rules.
+
 ## Deployment Commands
 
 Requires JDK 17+. Authentication happens via browser popup (default) or API tokens in `~/.gradle/gradle.properties`.
@@ -213,7 +219,7 @@ On Windows, use `gradlew.bat` instead of `./gradlew`.
 Edit `settings.gradle` and change the version in:
 ```gradle
 plugins {
-    id 'com.adaptavist.scriptrunner.migration-settings' version '0.2.0'
+    id 'com.adaptavist.scriptrunner.migration-settings' version '1.2.0'
 }
 ```
 
