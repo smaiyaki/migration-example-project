@@ -47,6 +47,21 @@ listeners:
     executionUser: ADD_ON
     projects:
       - "JRTWO"
+  - description: "Add comment when issue moves to Implementing"
+    uuid: "b16f16d3-458c-40bb-8b94-ae8e6a78b3ee"
+    events:
+      - jira:issue_updated
+    file: "CommentOnTransition.groovy"
+    # This is Jira Expression Language
+    executionCondition: |-
+      issue.changelogs[0].items.some(changelogItem => 
+          changelogItem.field == 'status'
+          && changelogItem.fromString == 'Open'
+          && changelogItem.toString == 'Implementing'
+      )
+    executionUser: ADD_ON
+    projects:
+      - "TES"
 
 jobs:
   - uuid: "1b22241f-ada9-4a4e-bce0-0de13a35074c"
