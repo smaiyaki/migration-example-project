@@ -219,7 +219,7 @@ On Windows, use `gradlew.bat` instead of `./gradlew`.
 Edit `settings.gradle` and change the version in:
 ```gradle
 plugins {
-    id 'com.adaptavist.scriptrunner.migration-settings' version '1.2.0'
+    id 'com.adaptavist.scriptrunner.migration-settings' version '1.3.0'
 }
 ```
 
