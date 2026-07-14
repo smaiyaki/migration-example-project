@@ -95,7 +95,7 @@ Scripted fields compute values displayed on issue screens.
 | `name`              | string        | **yes**               | Max 128 characters; used as deploy task identifier |
 | `scriptedFieldType` | enum          | **yes**               | See values below                                   |
 | `file`              | string        | one of file/codeToRun | Path relative to `cloud/src/main/groovy/`          |
-| `codeToRun`         | string        | one of file/codeToRun | Inline Groovy (avoid — prefer `file`)              |
+| `codeToRun`         | string        | one of file/codeToRun | Inline Groovy                                      |
 | `description`       | string        | no                    | Human-readable description                         |
 
 **`scriptedFieldType` values:** `TEXT_FIELD`, `NUMBER_FIELD`, `DATE_FIELD`, `DATETIME_FIELD`, `RICH_TEXT_FIELD`
@@ -121,7 +121,7 @@ Listeners react to Jira webhook events.
 | `description`        | string          | **yes**            | Used as deploy task identifier                                                         |
 | `events`             | list of strings | **yes**            | Jira webhook event names                                                               |
 | `file`               | string          | one of file/script | Path relative to `cloud/src/main/groovy/`                                              |
-| `script`             | string          | one of file/script | Inline Groovy (avoid — prefer `file`)                                                  |
+| `script`             | string          | one of file/script | Inline Groovy                                                                          |
 | `executionUser`      | enum            | **yes**            | `ADD_ON` or `INITIATING_USER`                                                          |
 | `executionCondition` | string          | no                 | Jira Expression Language (JEL); inline                                                 |
 | `conditionFile`      | string          | no                 | Path to a `.jel` file in Script Manager (mutually exclusive with `executionCondition`) |
@@ -130,11 +130,70 @@ Listeners react to Jira webhook events.
 
 **Common event values:**
 
-| Event                | When it fires |
-|----------------------|---------------|
-| `jira:issue_created` | Issue created |
-| `jira:issue_updated` | Issue updated |
-| `jira:issue_deleted` | Issue deleted |
+| Event                              | When it fires                                 |
+|------------------------------------|-----------------------------------------------|
+| **Issues**                         |                                               |
+| `jira:issue_created`               | Issue created                                 |
+| `jira:issue_updated`               | Issue updated                                 |
+| `jira:issue_updated_gdpr`          | Issue updated (GDPR-compliant payload)        |
+| `jira:issue_deleted`               | Issue deleted                                 |
+| **Comments**                       |                                               |
+| `comment_created`                  | Comment created                               |
+| `comment_updated`                  | Comment updated                               |
+| `comment_deleted`                  | Comment deleted                               |
+| **Attachments**                    |                                               |
+| `attachment_created`               | Attachment added to an issue                  |
+| `attachment_deleted`               | Attachment removed from an issue              |
+| **Issue links**                    |                                               |
+| `issuelink_created`                | Issue link created                            |
+| `issuelink_deleted`                | Issue link deleted                            |
+| **Issue types**                    |                                               |
+| `issuetype_created`                | Issue type created                            |
+| `issuetype_updated`                | Issue type updated                            |
+| `issuetype_deleted`                | Issue type deleted                            |
+| **Worklogs**                       |                                               |
+| `worklog_created`                  | Worklog entry created                         |
+| `worklog_updated`                  | Worklog entry updated                         |
+| `worklog_deleted`                  | Worklog entry deleted                         |
+| **Versions**                       |                                               |
+| `jira:version_created`             | Version created                               |
+| `jira:version_updated`             | Version updated                               |
+| `jira:version_moved`               | Version moved                                 |
+| `jira:version_released`            | Version released                              |
+| `jira:version_unreleased`          | Version unreleased                            |
+| `jira:version_deleted`             | Version deleted                               |
+| **Sprints**                        |                                               |
+| `sprint_created`                   | Sprint created                                |
+| `sprint_updated`                   | Sprint updated                                |
+| `sprint_started`                   | Sprint started                                |
+| `sprint_closed`                    | Sprint closed                                 |
+| `sprint_deleted`                   | Sprint deleted                                |
+| **Boards**                         |                                               |
+| `board_created`                    | Board created                                 |
+| `board_updated`                    | Board updated                                 |
+| `board_deleted`                    | Board deleted                                 |
+| `board_configuration_changed`      | Board configuration changed                   |
+| **Projects**                       |                                               |
+| `project_created`                  | Project created                               |
+| `project_updated`                  | Project updated                               |
+| `project_deleted`                  | Project deleted                               |
+| `project_soft_deleted`             | Project soft-deleted (moved to trash)         |
+| **Users**                          |                                               |
+| `user_created`                     | User created                                  |
+| `user_updated`                     | User updated                                  |
+| `user_deleted`                     | User deleted                                  |
+| **Filters**                        |                                               |
+| `filter_created`                   | Saved filter created                          |
+| `filter_updated`                   | Saved filter updated                          |
+| `filter_deleted`                   | Saved filter deleted                          |
+| **Project options**                |                                               |
+| `option_attachments_changed`       | Attachments option toggled on a project       |
+| `option_issuelinks_changed`        | Issue links option toggled on a project       |
+| `option_subtasks_changed`          | Subtasks option toggled on a project          |
+| `option_timetracking_changed`      | Time tracking option toggled on a project     |
+| `option_unassigned_issues_changed` | Unassigned issues option toggled on a project |
+| `option_voting_changed`            | Voting option toggled on a project            |
+| `option_watching_changed`          | Watching option toggled on a project          |
 
 ```yaml
 listeners:
@@ -172,7 +231,7 @@ makes an entry an **escalation service**.
 | `name`           | string        | **yes**            | Used as deploy task identifier                                         |
 | `cronExpression` | string        | **yes**            | 6-field Quartz cron: `sec min hr dom mon dow`                          |
 | `file`           | string        | one of file/script | Path relative to `cloud/src/main/groovy/`                              |
-| `script`         | string        | one of file/script | Inline Groovy (avoid — prefer `file`)                                  |
+| `script`         | string        | one of file/script | Inline Groovy                                                          |
 | `atlassianUser`  | object        | **yes**            | `{ accountId: "<account-id>" }` — supports `%user-alias%`              |
 | `enabled`        | boolean       | no                 | Default `true`                                                         |
 | `jql`            | string        | escalation only    | JQL query; presence of `jql` or `cql` makes this an escalation service |
@@ -493,16 +552,44 @@ validators:
 
 Post-functions execute Groovy scripts during transitions.
 
-| `config` field          | Type          | Required           | Notes                                              |
-|-------------------------|---------------|--------------------|----------------------------------------------------|
-| `className`             | string        | **yes**            | `"com.adaptavist.sr.cloud.workflow.UpdateIssue"`   |
-| `uuid`                  | string (UUID) | **yes**            | Identity field                                     |
-| `enabled`               | boolean       | no                 | Default `true`                                     |
-| `executionUser`         | string        | no                 | `"ADD_ON"` or `"INITIATING_USER"`                  |
-| `condition`             | string        | no                 | Jira Expression; post-function runs only when true |
-| `description`           | string        | no                 | Human-readable description                         |
-| `additionalCode.file`   | string        | one of file/script | Groovy file relative to `cloud/src/main/groovy/`   |
-| `additionalCode.script` | string        | one of file/script | Inline Groovy                                      |
+| Field                   | Type          | Required           | Notes                                                                                                   |
+|-------------------------|---------------|--------------------|---------------------------------------------------------------------------------------------------------|
+| `className`             | string        | **yes**            | Built-in action class (see table below)                                                                 |
+| `uuid`                  | string (UUID) | **yes**            | Identity field                                                                                          |
+| `enabled`               | boolean       | no                 | Default `true`                                                                                          |
+| `executionUser`         | string        | no                 | `"ADD_ON"` or `"INITIATING_USER"`                                                                       |
+| `condition`             | string        | no                 | Jira Expression Language (JEL); post-function runs only when true                                       |
+| `conditionFile`         | string        | no                 | Path relative to `cloud/src/main/groovy/`; file contains JEL (mutually exclusive with `condition`)      |
+| `description`           | string        | no                 | Human-readable description                                                                              |
+| `additionalCode.file`   | string        | one of file/script | Groovy file relative to `cloud/src/main/groovy/` (`UpdateIssue`, `RunScript`; optional on `CloneIssue`) |
+| `additionalCode.script` | string        | one of file/script | Inline Groovy (`UpdateIssue`, `RunScript`; optional on `CloneIssue`)                                    |
+
+**`className` values** (prefix: `com.adaptavist.sr.cloud.workflow.`):
+
+| Suffix                | Built-in action             |
+|-----------------------|-----------------------------|
+| `UpdateIssue`         | Modify work item            |
+| `RunScript`           | Run script                  |
+| `AssignToUserInGroup` | Assign work item            |
+| `CloneIssue`          | Clone work item             |
+| `CreateSubtask`       | Create sub-task             |
+| `FastTrackIssue`      | Fast-track transition       |
+| `SendNotification`    | Send notification           |
+| `SprintTransition`    | Add/remove from sprint      |
+| `TransitionParent`    | Transition parent work item |
+
+**Type-specific `config` fields:**
+
+| Type                       | Additional fields                                                           | Notes                                                                   |
+|----------------------------|-----------------------------------------------------------------------------|-------------------------------------------------------------------------|
+| `UpdateIssue`, `RunScript` | `additionalCode.file` or `additionalCode.script`                            | Groovy relative to `cloud/src/main/groovy/`, or inline                  |
+| `AssignToUserInGroup`      | `groupName`, `roleId`                                                       | `roleId` optional; use empty string if omitted                          |
+| `CloneIssue`               | `linkTypeId`, `linkDirection`, `issueTypeId`, `projectId`, `additionalCode` | `projectId` blank to clone into same project; `additionalCode` optional |
+| `CreateSubtask`            | `summary`, `issueTypeId`                                                    | Sub-task issue type ID                                                  |
+| `FastTrackIssue`           | `transitionName`, `transitionId`, `comment`                                 | Auto-transition the current issue                                       |
+| `SendNotification`         | `subject`, `assignee`, `watchers`, `reporter`, `voters`, `emailCode`        | Booleans select recipients; `emailCode` is Groovy returning HTML        |
+| `SprintTransition`         | `action`, `boardId`                                                         | `action`: e.g. `"add"`                                                  |
+| `TransitionParent`         | `transitionName`, `comment`                                                 | Transition the parent when a sub-task moves                             |
 
 ```yaml
 workflows:
@@ -513,6 +600,7 @@ workflows:
         targetStatus: "<toStatus>"
         type: "GLOBAL"                    # optional: DIRECTED, GLOBAL, INITIAL
         postFunctions:
+          # Modify work item (UpdateIssue)
           - parameters:
               id: "<uuid>"
               config:
@@ -521,8 +609,104 @@ workflows:
                 enabled: true
                 executionUser: "ADD_ON"
                 description: "<description>"
+                conditionFile: "<Script>.groovy"   # or condition: "<JEL>"
                 additionalCode:
-                  file: "<subdir>/<Script>.groovy"    # prefer file over inline script
+                  file: "<subdir>/<Script>.groovy"
+          # Run script (RunScript)
+          - parameters:
+              id: "<uuid>"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.RunScript"
+                uuid: "<uuid>"
+                enabled: true
+                executionUser: "ADD_ON"
+                description: "<description>"
+                additionalCode:
+                  script: "<inline Groovy>"
+          # Assign work item (AssignToUserInGroup)
+          - parameters:
+              id: "<uuid>"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.AssignToUserInGroup"
+                uuid: "<uuid>"
+                enabled: true
+                executionUser: "ADD_ON"
+                description: "<description>"
+                groupName: "<group>"
+                roleId: "<role-id>"              # or "" if unused
+          # Clone work item (CloneIssue)
+          - parameters:
+              id: "<uuid>"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.CloneIssue"
+                uuid: "<uuid>"
+                enabled: true
+                executionUser: "ADD_ON"
+                description: "<description>"
+                linkTypeId: "<link-type-id>"
+                linkDirection: "Outward"
+                issueTypeId: "<issue-type-id>"
+                projectId: "<project-id>"        # blank for same project
+          # Create sub-task (CreateSubtask)
+          - parameters:
+              id: "<uuid>"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.CreateSubtask"
+                uuid: "<uuid>"
+                enabled: true
+                executionUser: "ADD_ON"
+                description: "<description>"
+                summary: "<subtask summary>"
+                issueTypeId: "<subtask-issue-type-id>"
+          # Fast-track transition (FastTrackIssue)
+          - parameters:
+              id: "<uuid>"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.FastTrackIssue"
+                uuid: "<uuid>"
+                enabled: true
+                executionUser: "ADD_ON"
+                description: "<description>"
+                transitionName: "<transition>"
+                transitionId: "<transition-id>"
+                comment: "<comment>"
+          # Send notification (SendNotification)
+          - parameters:
+              id: "<uuid>"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.SendNotification"
+                uuid: "<uuid>"
+                enabled: true
+                executionUser: "ADD_ON"
+                description: "<description>"
+                subject: "<subject>"
+                assignee: true
+                watchers: true
+                reporter: false
+                voters: false
+                emailCode: "'<p>HTML body</p>'"
+          # Add/remove from sprint (SprintTransition)
+          - parameters:
+              id: "<uuid>"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.SprintTransition"
+                uuid: "<uuid>"
+                enabled: true
+                executionUser: "ADD_ON"
+                description: "<description>"
+                action: "add"
+                boardId: "<board-id>"
+          # Transition parent (TransitionParent)
+          - parameters:
+              id: "<uuid>"
+              config:
+                className: "com.adaptavist.sr.cloud.workflow.TransitionParent"
+                uuid: "<uuid>"
+                enabled: true
+                executionUser: "ADD_ON"
+                description: "<description>"
+                transitionName: "<transition>"
+                comment: "<comment>"
 ```
 
 #### Rule ordering
@@ -589,7 +773,7 @@ Before proposing config changes, verify:
 - [ ] Transition disambiguation fields (`sourceStatus`, `targetStatus`, or transition `id`) are set when the transition
   name is not unique within the workflow
 - [ ] Every condition, validator, and post-function has valid `parameters.id` and `config.uuid` values
-- [ ] Post-function `className` is `"com.adaptavist.sr.cloud.workflow.UpdateIssue"`
+- [ ] Post-function `className` is a valid built-in action (`com.adaptavist.sr.cloud.workflow.<Type>`)
 - [ ] Behaviour `fieldName` is `""` and each `fieldUuid` is unique within the behaviour
 - [ ] Behaviour names are globally unique
 - [ ] Cron expressions use 6-field Quartz format
