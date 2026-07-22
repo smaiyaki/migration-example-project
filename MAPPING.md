@@ -80,7 +80,7 @@ The tool checks for a site-specific file first and falls back to `mappings.json`
 
 ## Placeholder Syntax
 
-Add `%alias%` markers in `extensions.yaml` or any Groovy/TypeScript script wherever a DC identifier needs to be substituted. Always use them in **value positions**, never as YAML keys.
+Add `%alias%` markers in your YAML config files or any Groovy/TypeScript script wherever a DC identifier needs to be substituted. Always use them in **value positions**, never as YAML keys.
 
 ```groovy
 // Groovy scripts
@@ -89,7 +89,7 @@ setAssignee("%user-jsmith%")
 ```
 
 ```yaml
-# extensions.yaml
+# any *.yaml under resources/
 atlassianUser:
   accountId: "%user-jsmith%"
 
@@ -108,12 +108,17 @@ The placeholder name must match an alias name **exactly** as defined in the mapp
 ```
 
 The task reads `targetAtlassianSite` from `gradle.properties` to determine the subdomain, loads the mapping file,
-resolves all `%placeholder%` markers, and writes the results to `mapped/<subdomain>/`:
+resolves all `%placeholder%` markers, and writes the results to `mapped/<subdomain>/`.
+
+`pullMappings` is **not** affected by `-Psource`. It always recursively scans and processes **all** `*.yaml` files
+under `cloud/src/main/resources/` (including subdirectories).
 
 ```
 mapped/
 └── my-company/
     ├── extensions.yaml
+    ├── jobs/
+    │   └── scheduled.yaml
     ├── groovy/
     │   └── MyScript.groovy
     └── typescript/
