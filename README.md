@@ -108,7 +108,62 @@ As an optional step, you may put your DataCenter scripts in the onprem/src/main/
 This is to help with migrations and allow a side-by-side comparison of DataCenter and Cloud scripts, but it is not
 necessary at all in order to use the Development and Deployment Tool.
 
-The configuration for your Cloud scripts is defined in the cloud/src/main/resources/extensions.yaml file.
+ScriptRunner Cloud configuration lives under `cloud/src/main/resources/` as one or more `*.yaml` files.
+A single `extensions.yaml` still works; for larger migrations you can split config across multiple files and
+subdirectories (for example by team or feature type). By default, deploy tasks recursively scan **all** `*.yaml`
+files under `resources/`.
+
+### Splitting configuration across multiple YAML files
+
+Large single YAML files are hard to review and own. You can split configuration into as many `*.yaml` files as you
+like under `cloud/src/main/resources/`, including nested folders. Configs from every file in scope are merged before
+deploy. When more than one file is in scope, duplicate identities (same `uuid`, or same `name`/`description` within a
+feature type) **block** deployment.
+
+Example layout:
+
+```
+cloud/src/main/resources/
+├── extensions.yaml                 # e.g. listeners, script fields
+├── jobs/
+│   ├── scheduled.yaml
+│   └── escalations.yaml
+└── team-a/
+    ├── behaviours.yaml
+    └── nested/
+        └── workflows.yaml
+```
+
+#### Scoping with `-Psource`
+
+Use the Gradle property `-Psource` to limit which YAML files drive **task registration**, `./gradlew tasks`, and
+**deploy**. Paths are relative to `cloud/src/main/resources/`.
+
+| Mode | Example | Scope |
+|------|---------|--------|
+| Default (no `-Psource`) | `./gradlew cloud:deploy-all` | All `*.yaml` under `resources/` (recursive) |
+| Single file | `-Psource=extensions.yaml` | That one file only |
+| Subdirectory | `-Psource=jobs/` or `-Psource=team-a/` | All `*.yaml` under that directory (recursive) |
+
+`-Psource` affects deploy and tasks listing. It does **not** affect `pullMappings` — that always recursively processes
+all YAML (and Groovy/TypeScript) under `resources/`. See [MAPPING.md](MAPPING.md).
+
+```bash
+# All yaml under resources/ (recursive) — includes jobs/, team-a/, team-a/nested/, …
+./gradlew cloud:deploy-all
+
+# Single file only
+./gradlew cloud:deploy-all -Psource=extensions.yaml
+
+# All yaml under jobs/ (scheduled.yaml + escalations.yaml)
+./gradlew cloud:deploy-job-all -Psource=jobs/
+
+# All yaml under team-a/ recursively (behaviours.yaml + nested/workflows.yaml)
+./gradlew cloud:deploy-all -Psource=team-a/
+
+# tasks listing matches the same scope
+./gradlew cloud:tasks -Psource=team-a/
+```
 
 ## Use an IDE
 
@@ -126,7 +181,7 @@ different defaults, especially if you're using Java or IntelliJ in other project
 ## Identifier Mapping (DC → Cloud)
 
 When migrating from Data Center, entity identifiers (custom field IDs, user keys, issue type IDs, etc.) differ in
-Cloud — and IDs can vary between Cloud sites as well. Rather than hard-coding values in scripts or `extensions.yaml`,
+Cloud — and IDs can vary between Cloud sites as well. Rather than hard-coding values in scripts or YAML config files,
 we suggest using `%placeholder%` markers backed by a mapping file that records each DC → Cloud translation.
 
 Run `./gradlew pullMappings` before deploying to replace placeholders with the correct Cloud IDs for your target
@@ -145,20 +200,21 @@ site. See **[MAPPING.md](MAPPING.md)** for the mapping file format, placeholder 
 
 Scripts and their configuration can be deployed to the configured cloud instance using various Gradle tasks.
 
-You'll need to define the configuration for each script manually in `cloud/src/main/resources/extensions.yaml`. 
+You'll need to define the configuration for each script manually in one or more YAML files under
+`cloud/src/main/resources/` (see [Splitting configuration across multiple YAML files](#splitting-configuration-across-multiple-yaml-files)).
 Most features are supported, with the notable exceptions of Script Fragments, though support for those is on the roadmap.
 See https://docs.adaptavist.com/sms/latest/scriptrunner-dev-and-deployment-tool/supported-features-and-limitations for
 the up-to-date list of supported features.
 
-NOTE: Escalation Services are grouped under the `jobs` anchor in the extensions.yaml file. 
+NOTE: Escalation Services are grouped under the `jobs` anchor in the YAML configuration. 
 They will be in a distinct spot in the ScriptRunner Cloud UI once deployed. See the [feature documentation](https://docs.adaptavist.com/sr4jc/latest/features/escalation-service) for more details.
 
 There are examples in there to start you off, but don't keep them unless you *actually* want those scripts in your
 instance. Likewise, make sure to carefully verify any configuration you get from the Migration Agent or other AI-based 
 tools. 
 
-Once you have some configuration in extensions.yaml, the project will automatically configure Gradle tasks for each
-script configuration. Tasks can either be run from the command line (eg `./gradlew cloud:deploy-all`) or from the Gradle
+Once you have configuration in those YAML files, the project will automatically configure Gradle tasks for each
+script configuration in scope. Tasks can either be run from the command line (eg `./gradlew cloud:deploy-all`) or from the Gradle
 tool window in IntelliJ IDEA (or your IDE of choice). There are tasks to deploy scripts in bulk:
 
     ./gradlew cloud:deploy-all # Deploy all extensions
