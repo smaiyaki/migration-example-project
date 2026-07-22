@@ -5,7 +5,7 @@ local command line and IDE.
 
 ## Try it
 
-You can clone this using Git (or your favorite Git GUI, such as SourceTree). 
+You can clone this using Git (or your favorite Git GUI, such as SourceTree).
 We recommend cloning to a different subdirectory for each migration you're working on. For example:
 
 `git clone https://bitbucket.org/adaptavistlabs/migration-example-project.git migration-x`
@@ -20,20 +20,24 @@ recommend using [SDKMAN!](https://sdkman.io/) to manage Java installations. For 
 ### Point the Tool at your site
 
 Update the gradle.properties file in this project to point to the Atlassian instance you want to work with.
+
 ```properties
 targetAtlassianSite=https://your-instance-goes-here.atlassian.net
 ```
-Also rename `mappings-target-instance-goes-here.json` to `mappings-<your instance name>.json` so that `pullMappings` will work.
 
+Also rename `mappings-target-instance-goes-here.json` to `mappings-<your instance name>.json` so that `pullMappings`
+will work.
 
 ### Authenticate
 
 To use the Development & Deployment Tool, the machine running the deployment commands has to be able to authenticate
 with the ScriptRunner Cloud backend. There are two ways to do this:
+
 1. Browser-based authentication (the default)
 2. Saved Atlassian API Tokens
 
-The browser-based path is probably easiest for most users, but is currently broken in Google Chrome and browsers based on Chromium.
+The browser-based path is probably easiest for most users, but is currently broken in Google Chrome and browsers based
+on Chromium.
 We know that sucks, and we're working on it, but there are some blockers. Please bear with us!
 
 The second is best for people using the Dev & Deployment Tool in Continuous Integration environments who need a durable
@@ -41,12 +45,12 @@ stored credential (or need to work around the above bug for Chrome).
 
 #### Path 1: Browser-based authentication
 
-The first and easiest way to authenticate is to simply run commands and sign in to your Jira instance when a browser 
+The first and easiest way to authenticate is to simply run commands and sign in to your Jira instance when a browser
 window pops up. You'll see a message like the following:
 
-> The ScriptRunner Dev & Deployment Tool is requesting access to your ScriptRunner instance. 
+> The ScriptRunner Dev & Deployment Tool is requesting access to your ScriptRunner instance.
 > This will allow the Gradle plugin to deploy scripts and configurations on your behalf.
-> 
+>
 > Allow / Deny
 
 Choose **Allow** and the Dev & Deployment tool will be able to use a temporary token to make updates as you.
@@ -61,18 +65,18 @@ If using the browser-based authentication doesn't work for your environment, you
 and store them in a private configuration file.
 
 The configuration file you need to update will be in a different directory, from this project,
-though it will also be named gradle.properties like the one you updated earlier. The directory is 
+though it will also be named gradle.properties like the one you updated earlier. The directory is
 the [Gradle user home directory](https://docs.gradle.org/current/userguide/directory_layout.html#dir:gradle_user_home),
-which is a hidden directory inside your user home directory. Your user home directory will be in different locations, 
-depending on your operating system. Assuming your username is `me`, it might be /Users/home/me on Mac OSX, 
+which is a hidden directory inside your user home directory. Your user home directory will be in different locations,
+depending on your operating system. Assuming your username is `me`, it might be /Users/home/me on Mac OSX,
 C:\Users\me on Windows, or /home/me on Linux.
 
-The Gradle user home directory's gradle.properties file is where you will put the credentials, which you want to keep 
+The Gradle user home directory's gradle.properties file is where you will put the credentials, which you want to keep
 private to yourself.
 In that file, you will specify the Atlassian User and Token that allow you to sign in to your Atlassian Cloud Site.
 
 We will refer to the gradle.properties file in your user home directory as `~/.gradle/gradle.properties` for the rest of
-this document.  Different people working on this project will have different credentials. As such, they will each specify
+this document. Different people working on this project will have different credentials. As such, they will each specify
 their own credentials in their user home, while sharing the site URL in the project's local gradle.properties file.
 
 ##### Get the credentials
@@ -84,12 +88,13 @@ recommend creating a regular API token without scopes.
 manager.
 
 **Warning:** Atlassian API tokens allow a user to act as you on any instance connected to your Atlassian account.
-Be as protective of this token as you would any password. Follow best practices and good hygiene for secrets management, 
+Be as protective of this token as you would any password. Follow best practices and good hygiene for secrets management,
 including revoking the access token when migration is done.
 
 ##### Update the files
 
-Update your user home gradle.properties file `~/.gradle/gradle.properties` with the following properties set (without the square brackets):
+Update your user home gradle.properties file `~/.gradle/gradle.properties` with the following properties set (without
+the square brackets):
 
 ```properties
 atlassianUser=[your Adaptavist email address]
@@ -102,7 +107,8 @@ if you have multiple engagements in flight, each one in different directories. I
 them somewhere that you shouldn't.
 
 ## Configuration and Code
-The Groovy code for your listeners can go in the cloud/src/main/groovy folder. 
+
+The Groovy code for your listeners can go in the cloud/src/main/groovy folder.
 
 As an optional step, you may put your DataCenter scripts in the onprem/src/main/groovy directory.
 This is to help with migrations and allow a side-by-side comparison of DataCenter and Cloud scripts, but it is not
@@ -171,7 +177,9 @@ Any IDE with Gradle and Groovy support can add value to this project, but we
 recommend [IntelliJ](https://www.jetbrains.com/idea/download/?section=mac). The free Community Edition supports
 everything that you need to use this project.
 
-Double-check that the JDK IntelliJ is using matches the one that you are using. There will be a couple of places to check:
+Double-check that the JDK IntelliJ is using matches the one that you are using. There will be a couple of places to
+check:
+
 * The [IntelliJ Gradle Project Settings](https://www.jetbrains.com/help/idea/gradle-settings.html)
 * The [IntelliJ Project Structure Settings](https://www.jetbrains.com/help/idea/project-settings-and-structure.html)
 
@@ -184,15 +192,18 @@ When migrating from Data Center, entity identifiers (custom field IDs, user keys
 Cloud — and IDs can vary between Cloud sites as well. Rather than hard-coding values in scripts or YAML config files,
 we suggest using `%placeholder%` markers backed by a mapping file that records each DC → Cloud translation.
 
-Run `./gradlew pullMappings` before deploying to replace placeholders with the correct Cloud IDs for your target
-site. See **[MAPPING.md](MAPPING.md)** for the mapping file format, placeholder syntax, and supported entity types.
+Deploy tasks run `pullMappings` automatically when source contains `%placeholder%` markers, then deploy from
+`build/mapped/<site>/`. With no placeholders, deploy reads from `cloud/src/main/`. You can also run `pullMappings`
+standalone to inspect resolved output before deploying.
+See **[MAPPING.md](MAPPING.md)** for the mapping file format, placeholder syntax, and supported entity types.
 
 ```bash
-./gradlew pullMappings
+./gradlew pullMappings          # optional — inspect resolved output
 ```
 
-> **Run `pullMappings` before any deploy task** if your source files contain `%placeholder%` markers. Deploy tasks
-> will hard-fail if unresolved placeholders are detected.
+> Deploy tasks hard-fail if unresolved `%placeholder%` markers remain in the files they read. Pass `-PskipMappings`
+> only when source has placeholders, `build/mapped/<site>/` already exists, and you accept deploying possibly stale
+> resolved IDs.
 
 ---
 
@@ -210,8 +221,8 @@ NOTE: Escalation Services are grouped under the `jobs` anchor in the YAML config
 They will be in a distinct spot in the ScriptRunner Cloud UI once deployed. See the [feature documentation](https://docs.adaptavist.com/sr4jc/latest/features/escalation-service) for more details.
 
 There are examples in there to start you off, but don't keep them unless you *actually* want those scripts in your
-instance. Likewise, make sure to carefully verify any configuration you get from the Migration Agent or other AI-based 
-tools. 
+instance. Likewise, make sure to carefully verify any configuration you get from the Migration Agent or other AI-based
+tools.
 
 Once you have configuration in those YAML files, the project will automatically configure Gradle tasks for each
 script configuration in scope. Tasks can either be run from the command line (eg `./gradlew cloud:deploy-all`) or from the Gradle
@@ -263,7 +274,7 @@ You may want some of the following, depending on the context you are working in:
 
 # Get Updates
 
-A Gradle plugin developed by Adaptavist powers deployments in this project. We are actively working on it, so you will 
+A Gradle plugin developed by Adaptavist powers deployments in this project. We are actively working on it, so you will
 need to apply updates to get additional feature support and bugfixes as we release them.
 
 To update, open the `settings.gradle` file in this project and edit this set of lines:
@@ -274,8 +285,10 @@ plugins {
 }
 ```
 
-You can check back in the [sample project on Bitbucket](https://bitbucket.org/adaptavistlabs/migration-example-project/src/main/settings.gradle) 
-or look at the [plugin artifact in our public nexus repository](https://nexus.adaptavist.net/service/rest/repository/browse/external/com/adaptavist/scriptrunner/cloud/migration-dev-and-deployment-plugin/)
+You can check back in
+the [sample project on Bitbucket](https://bitbucket.org/adaptavistlabs/migration-example-project/src/main/settings.gradle)
+or look at
+the [plugin artifact in our public nexus repository](https://nexus.adaptavist.net/service/rest/repository/browse/external/com/adaptavist/scriptrunner/cloud/migration-dev-and-deployment-plugin/)
 to get the latest version number of the plugin.
 
 # Further information
@@ -283,13 +296,16 @@ to get the latest version number of the plugin.
 For further information read the [documentation on our website](https://docs.adaptavist.com/sms/).
 
 ## Working with workflows
+
 Our assumption is that you will have already run the Jira Cloud Migration Assistant for your instance, and that all of
 your workflows already exist in your target Cloud instance. Likewise, we assume that other apps and Jira native workflow
 conditions, validators, and post functions will exist alongside ScriptRunner workflow functions, but those will not be
 managed in the extensions.yaml file.
 
-If you have ScriptRunner workflow functions in a workflow that aren't part of the Dev and Deployment's configuration file (extensions.yaml),
-the Dev and Deployment tool will log out a warning when you run deployment tasks. It won't hurt anything, but it can be helpful to have all of the
+If you have ScriptRunner workflow functions in a workflow that aren't part of the Dev and Deployment's configuration
+file (extensions.yaml),
+the Dev and Deployment tool will log out a warning when you run deployment tasks. It won't hurt anything, but it can be
+helpful to have all of the
 configuration in one place.
 
 ### Ordering post functions and validators
@@ -307,6 +323,7 @@ Supported placement fields:
 # Known Issues
 
 ## Rate Limits
+
 Both Atlassian and Adaptavist have some rate limits on our APIs.
 
 The place where this is most keenly felt is in workflow deployments. Customers often have a large number of workflows
@@ -314,24 +331,28 @@ and may run into Atlassian's rate limits at scale.
 
 Atlassian's rate limits are documented at https://developer.atlassian.com/cloud/jira/platform/rate-limiting/.
 
-We have plans to build rate limiting into the tool more thoroughly, so watch this space and [our documentation](https://docs.adaptavist.com/sms/latest/scriptrunner-dev-and-deployment-tool/supported-features-and-limitations).
+We have plans to build rate limiting into the tool more thoroughly, so watch this space
+and [our documentation](https://docs.adaptavist.com/sms/latest/scriptrunner-dev-and-deployment-tool/supported-features-and-limitations).
 
 ## TypeScript Compilation Warnings
 
-For Behaviours, the TypeScript compiler may emit some errors during compilation of the TypeScript code into JavaScript. Some of these errors may indicate problems in your script, but some can be safely ignored. 
+For Behaviours, the TypeScript compiler may emit some errors during compilation of the TypeScript code into JavaScript.
+Some of these errors may indicate problems in your script, but some can be safely ignored.
 
 Specifically, warnings like these are expected. We're working on better ways to suppress them.
 🚧 Please pardon our progress. 🚧
 
 ```properties
-../../src/main/typescript/behaviours.d.ts(388,5): error TS1038: A 'declare' modifier cannot be used in an already ambient context.
-../../src/main/typescript/behaviourA.ts(14,15): error TS1378: Top-level 'await' expressions are only allowed when the 'module' option is set to 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', 'nodenext', or 'preserve', and the 'target' option is set to 'es2017' or higher.
+../../src/main/typescript/behaviours.d.ts(388,5):error TS1038: A 'declare' modifier cannot be used in an already ambient context.
+../../src/main/typescript/behaviourA.ts(14,15):error TS1378: Top-level 'await' expressions are only allowed when the 'module' option is set to 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', 'nodenext', or 'preserve', and the 'target' option is set to 'es2017' or higher.
 ```
 
 # Optional Analytics
-The Gradle plugin collects some high-level analytics about its usage. 
+
+The Gradle plugin collects some high-level analytics about its usage.
 We use these to gauge how people are getting on with the Dev and Deployment tool and make it work better.
 You can disable these by adding the following property to gradle.properties:
+
 ```properties
 com.adaptavist.scriptrunner.deployment.analytics.enabled=false
 ```
