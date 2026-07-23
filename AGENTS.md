@@ -924,7 +924,7 @@ Edit `settings.gradle` and change the version in:
 
 ```gradle
 plugins {
-    id 'com.adaptavist.scriptrunner.migration-settings' version '1.5.0'
+    id 'com.adaptavist.scriptrunner.migration-settings' version '1.6.0'
 }
 ```
 
