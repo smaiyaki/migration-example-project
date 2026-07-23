@@ -108,7 +108,8 @@ them somewhere that you shouldn't.
 
 ## Configuration and Code
 
-The Groovy code for your listeners can go in the cloud/src/main/groovy folder.
+Groovy scripts (listeners, script fields, jobs, workflows, Script Manager) go in the `cloud/src/main/groovy`
+folder. Behaviour scripts (TypeScript only) go in `cloud/src/main/typescript/`.
 
 As an optional step, you may put your DataCenter scripts in the onprem/src/main/groovy directory.
 This is to help with migrations and allow a side-by-side comparison of DataCenter and Cloud scripts, but it is not
@@ -248,7 +249,7 @@ change is correct. For example, some of our pre-configured samples will generate
 For the Gradle task name, listeners are identified by their description. Script fields and script jobs by their name.
 Additional script manager scripts are identified by their file path with forward slashes `/` replaced by hyphens `-`.
 
-You can also get a list of all valid tasks, including individual scripts, running ` ./gradlew cloud:task`
+You can also get a list of all valid tasks, including individual scripts, by running `./gradlew cloud:tasks`
 
 If there are errors in the YAML, the plugin will fail to apply and log out any errors received on any Gradle task.
 
@@ -300,10 +301,10 @@ For further information read the [documentation on our website](https://docs.ada
 Our assumption is that you will have already run the Jira Cloud Migration Assistant for your instance, and that all of
 your workflows already exist in your target Cloud instance. Likewise, we assume that other apps and Jira native workflow
 conditions, validators, and post functions will exist alongside ScriptRunner workflow functions, but those will not be
-managed in the extensions.yaml file.
+managed in your YAML config under `cloud/src/main/resources/`.
 
-If you have ScriptRunner workflow functions in a workflow that aren't part of the Dev and Deployment's configuration
-file (extensions.yaml),
+If you have ScriptRunner workflow functions in a workflow that aren't part of the Dev and Deployment's YAML
+configuration,
 the Dev and Deployment tool will log out a warning when you run deployment tasks. It won't hurt anything, but it can be
 helpful to have all of the configuration in one place.
 

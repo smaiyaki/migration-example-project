@@ -120,13 +120,13 @@ The placeholder name must match an alias name **exactly** as defined in the mapp
 ```
 
 The task reads `targetAtlassianSite` from `gradle.properties` to determine the subdomain, loads the mapping file,
-resolves all `%placeholder%` markers, and writes the results to `mapped/<subdomain>/`.
+resolves all `%placeholder%` markers, and writes the results to `build/mapped/<subdomain>/`.
 
 `pullMappings` is **not** affected by `-Psource`. It always recursively scans and processes **all** `*.yaml` files
 under `cloud/src/main/resources/` (including subdirectories).
 
 ```
-mapped/
+build/mapped/
 └── my-company/
     ├── extensions.yaml
     ├── jobs/
@@ -137,7 +137,7 @@ mapped/
         └── myBehaviour.ts
 ```
 
-Source files are **never modified**. The `mapped/` folder is the only output.
+Source files are **never modified**. The `build/mapped/` folder is the only output.
 
 Run `pullMappings` again any time the mapping file or source files change — the output folder is fully recreated each
 run.
