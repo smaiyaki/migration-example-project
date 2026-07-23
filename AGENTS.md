@@ -427,6 +427,10 @@ In workflows where more than one transition has the same name, disambiguate usin
 Where necessary, you can also specify a transition `type` (`DIRECTED`, `GLOBAL`, `INITIAL`). Use transition `id` only as
 a last resort when name, statuses, and type still aren't enough.
 
+If a declared transition matches nothing on the Jira workflow (wrong name and/or statuses), its functions are **not**
+deployed. Deploy logs a warning and the build still succeeds — fix the transition identity so functions are not
+silently skipped.
+
 **Two different `id` fields — do not confuse them:**
 
 | Location                                                          | What it is                                 | Required?                               |
@@ -822,7 +826,7 @@ Before proposing config changes, verify:
 - [ ] Only one script reference method per entry (`file`, `path`, or inline — not multiple)
 - [ ] Workflow `name` matches the target Jira workflow exactly
 - [ ] Transition disambiguation fields (`sourceStatus`, `targetStatus`, or transition `id`) are set when the transition
-  name is not unique within the workflow
+  name is not unique within the workflow — unmatched transitions warn and skip functions (build still succeeds)
 - [ ] Every condition, validator, and post-function has valid `parameters.id` and `config.uuid` values
 - [ ] Post-function `className` is a valid built-in action (`com.adaptavist.sr.cloud.workflow.<Type>`)
 - [ ] Behaviour `fieldName` is `""` and each `fieldUuid` is unique within the behaviour
@@ -904,6 +908,7 @@ On Windows, use `gradlew.bat` instead of `./gradlew`.
 ## Important Constraints
 
 - Workflows must already exist in the target Cloud instance (typically migrated via Jira Cloud Migration Assistant)
+- Unmatched YAML transitions (name/statuses not found on Jira) warn and skip their functions; build still succeeds — check logs
 - Behaviours use TypeScript, not Groovy. Scripts go in `cloud/src/main/typescript/`
 - Prefer splitting large config into multiple `*.yaml` under `resources/`; use `-Psource` to scope deploy/tasks (not pullMappings)
 - Strongly prefer the `file` attribute over `path` for all features except behaviours (keeps scripts in Script Manager)

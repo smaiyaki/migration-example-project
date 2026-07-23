@@ -305,8 +305,11 @@ managed in the extensions.yaml file.
 If you have ScriptRunner workflow functions in a workflow that aren't part of the Dev and Deployment's configuration
 file (extensions.yaml),
 the Dev and Deployment tool will log out a warning when you run deployment tasks. It won't hurt anything, but it can be
-helpful to have all of the
-configuration in one place.
+helpful to have all of the configuration in one place.
+
+The reverse case is also warned: if a transition declared in your YAML does not match any transition on the Jira
+workflow (wrong name and/or source/target statuses), its ScriptRunner functions are **not** deployed and a warning is
+logged. The build still succeeds — check the log so those functions are not silently skipped.
 
 ### Ordering post functions and validators
 
