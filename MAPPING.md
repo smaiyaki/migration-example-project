@@ -13,6 +13,8 @@ Create a JSON mapping file in the project root. Two formats are supported:
 
 ### Option A — Site-specific file (recommended)
 
+For each Atlassian Cloud site you deploy to, create a separate mapping file.
+
 **Filename:** `mappings-<subdomain>.json` (e.g. `mappings-my-company.json`)
 
 Entity types are root-level keys:

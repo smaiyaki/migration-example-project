@@ -26,7 +26,7 @@ targetAtlassianSite=https://your-instance-goes-here.atlassian.net
 ```
 
 Also rename `mappings-target-instance-goes-here.json` to `mappings-<your instance name>.json` so that `pullMappings`
-will work.
+will work (see [Identifier Mapping](#markdown-header-identifier-mapping-dc-cloud), below, for more details).
 
 ### Authenticate
 
