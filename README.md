@@ -244,10 +244,14 @@ change is correct. For example, some of our pre-configured samples will generate
     ./gradlew "deploy-scriptField-Date Difference"
     ./gradlew "deploy-listener-Add a definition of done checklist to an issue on creation"
     ./gradlew "deploy-workflow-SMURF_ Project Management Workflow"
+    ./gradlew "deploy-workflow-SMURF_ Project Management Workflow" --onDuplicate=fail
     ./gradlew deploy-script-manager-acme-dev-ConsoleScript1.groovy
 
 For the Gradle task name, listeners are identified by their description. Script fields and script jobs by their name.
 Additional script manager scripts are identified by their file path with forward slashes `/` replaced by hyphens `-`.
+
+Workflow deploys also accept `--onDuplicate=fail|update` to detect or adopt JCMA-migrated functions whose Cloud ids
+do not match your yaml — see [Duplicate detection for workflow deployments](#duplicate-detection-for-workflow-deployments-onduplicate).
 
 You can also get a list of all valid tasks, including individual scripts, by running `./gradlew cloud:tasks`
 
@@ -311,6 +315,51 @@ helpful to have all of the configuration in one place.
 The reverse case is also warned: if a transition declared in your YAML does not match any transition on the Jira
 workflow (wrong name and/or source/target statuses), its ScriptRunner functions are **not** deployed and a warning is
 logged. The build still succeeds — check the log so those functions are not silently skipped.
+
+### Duplicate detection for workflow deployments (`--onDuplicate`)
+
+When JCMA migrates ScriptRunner workflow functions to Cloud, legacy functions (no `FIELD_FUNCTION_ID` in the DC
+workflow XML) get a freshly generated uuid that does not match the id in the Script Registry export the migration
+yaml was built from. Deploying such a yaml would then create a *duplicate* function instead of updating the
+disabled, JCMA-migrated one already on the workflow.
+
+Workflow deploy tasks accept an `--onDuplicate` option to handle this:
+
+```bash
+./gradlew "deploy-workflow-My Workflow Name" --onDuplicate=fail    # detect and abort
+./gradlew "deploy-workflow-My Workflow Name" --onDuplicate=update  # adopt the existing id and update in place
+```
+
+Before deploying, each yaml function whose id does not exist on the target workflow is matched against the
+existing ScriptRunner functions on the same transition and of the same type (post function / validator /
+condition) by config `className`, tie-breaking by `description`. Failure messages include `#N of M` indexes
+(and description/expression hints) so you can tell otherwise identical rules apart. Then:
+
+- `fail`: the deployment fails without changing anything. Each match is listed in the
+  failure message (existing Jira id, yaml id, enabled status, and a link to edit the workflow)
+  — details are not written to the Gradle log separately. Works with mapped (placeholder-resolved)
+  deploys; use it to discover Cloud ids, then update `mappings-*.json` yourself if needed.
+- `update`: the yaml function adopts the existing Jira id, so the existing function is updated in place —
+  preserving its position on the transition — instead of a duplicate being created. After a successful
+  deploy the adopted id is written back into your source yaml under `cloud/src/main/resources`: the previous
+  id is kept as a commented `# legacyId: "..."` line above the new `id: "..."`. **Not supported** when
+  deploying mapped output (placeholders) — use `fail` and edit mappings manually.
+- `--onDuplicate` (either mode) is refused when more than 20 workflows are in the task scope (Jira's
+  per-request batch limit), so a mid-run abort cannot leave a partial deploy.
+- For **conditions**, adopting an id feeds the normal merge path. If the yaml places the condition
+  flat (or in a different group) while the JCMA-migrated function lives under another condition group, the merge
+  can move the rule between root and groups once ids align — which can change ALL/ANY grouping. That is
+  intentional: the JCMA-created placement on Jira is treated as the more accurate source of position.
+- If a match is ambiguous (several existing functions share the same className and description did not
+  uniquely disambiguate), the deployment fails and no id is adopted; set the yaml id to the intended
+  function's id instead.
+- If an undeclared ScriptRunner function on Jira cannot be decoded (missing/unreadable `className`) and
+  the yaml would deploy a new id on that transition, `--onDuplicate` aborts rather than risk creating a
+  duplicate. Set the yaml id to the existing function's id, or fix/remove the undecodable function on Jira.
+- Without `--onDuplicate`, behaviour is unchanged: unmatched ids deploy as new functions.
+
+The option is currently implemented for workflow functions only; passing it to other deploy tasks (or to
+`deploy-all` when non-workflow configurations are in scope) fails rather than being silently ignored.
 
 ### Ordering post functions and validators
 
