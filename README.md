@@ -244,10 +244,14 @@ change is correct. For example, some of our pre-configured samples will generate
     ./gradlew "deploy-scriptField-Date Difference"
     ./gradlew "deploy-listener-Add a definition of done checklist to an issue on creation"
     ./gradlew "deploy-workflow-SMURF_ Project Management Workflow"
+    ./gradlew "deploy-workflow-SMURF_ Project Management Workflow" --onDuplicate=fail
     ./gradlew deploy-script-manager-acme-dev-ConsoleScript1.groovy
 
 For the Gradle task name, listeners are identified by their description. Script fields and script jobs by their name.
 Additional script manager scripts are identified by their file path with forward slashes `/` replaced by hyphens `-`.
+
+Workflow deploys also accept `--onDuplicate=fail|update` to detect or adopt JCMA-migrated functions whose Cloud ids
+do not match your yaml — see [Duplicate detection for workflow deployments](#markdown-header-duplicate-detection-for-workflow-deployments).
 
 You can also get a list of all valid tasks, including individual scripts, by running `./gradlew cloud:tasks`
 
@@ -282,7 +286,7 @@ To update, open the `settings.gradle` file in this project and edit this set of 
 
 ```gradle
 plugins {
-    id 'com.adaptavist.scriptrunner.migration-settings' version '1.6.0' // Change this version number to the latest release
+    id 'com.adaptavist.scriptrunner.migration-settings' version '1.7.1' // Change this version number to the latest release
 }
 ```
 
@@ -311,6 +315,65 @@ helpful to have all of the configuration in one place.
 The reverse case is also warned: if a transition declared in your YAML does not match any transition on the Jira
 workflow (wrong name and/or source/target statuses), its ScriptRunner functions are **not** deployed and a warning is
 logged. The build still succeeds — check the log so those functions are not silently skipped.
+
+### Duplicate detection for workflow deployments
+
+When JCMA migrates ScriptRunner workflow functions, Cloud may assign ids that do not match your yaml.
+Without caution, a deploy can **add a second copy** of a function that already exists on the transition.
+
+```bash
+./gradlew "deploy-workflow-My Workflow Name" --onDuplicate=fail
+./gradlew "deploy-workflow-My Workflow Name" --onDuplicate=update
+```
+
+**Without `--onDuplicate`**
+
+Any yaml function whose id is not already on that Cloud transition is **added as a new** post function /
+validator / condition. Existing Cloud functions are left alone.
+
+**`--onDuplicate=fail`**
+
+Scans for yaml functions that look like they would create duplicates of functions already on Jira
+(same transition, same function type, same non-empty description — and that description points at
+exactly one Cloud candidate).
+
+- If any duplicates are identified (or matching is ambiguous / unsafe), **nothing is deployed**.
+- **Clear matches** (e.g. three yaml functions each uniquely matched to one Cloud function): the build
+  fails once and the failure message **lists all of them** together.
+- **Ambiguous / unsafe** matching (several Cloud candidates, empty description, unreadable config, …):
+  the run **stops at the first** problem. Fix that case (or set the yaml id by hand), then re-run —
+  another transition or function may surface next.
+- Messages include enough to pick the right Cloud function: **id**, **description** (or expression),
+  **position** (`#N of M` on the transition), enabled flag, and a link to the workflow editor.
+
+Use `fail` to discover Cloud ids (including with mapped / placeholder deploys), then set ids in yaml
+or `mappings-*.json` yourself.
+
+**`--onDuplicate=update`**
+
+Only adopts a Cloud id when there is a **single clear match** for that yaml function. Ambiguous cases
+abort the same way as `fail` — **no deploy**.
+
+If every duplicate in the deployment scope has a clear match, those functions are updated **in place**
+(not added again). The change is written to Jira only when the whole update succeeds; then source yaml
+under `cloud/src/main/resources` is rewritten (`# legacyId: "…"` kept above the new `id`). If anything
+in scope is still ambiguous, nothing is written and yaml is not changed.
+
+`update` is **not** supported when deploying mapped (placeholder-resolved) output — use `fail` and edit
+mappings manually.
+
+Prefer a **single-workflow** task (e.g. `./gradlew "deploy-workflow-My Workflow Name" --onDuplicate=update`)
+rather than `deploy-workflow-all` / `deploy-all`, so an ambiguous match elsewhere cannot block clear
+updates and yaml rewrites stay easy to review.
+
+**Limits**
+
+- Workflow functions only (not listeners, jobs, …).
+- Refused when more than 20 workflows are in the task scope (avoids a partial multi-batch deploy).
+
+Matching looks at Connect and Forge ScriptRunner rules on the transition. Expression conditions /
+validators that omit `className` but include an `expression` are treated as
+`GenericWorkflowActionConfig`; missing both stays unsafe (fail-closed).
 
 ### Ordering post functions and validators
 

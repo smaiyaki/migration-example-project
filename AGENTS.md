@@ -883,6 +883,8 @@ deploy (not `pullMappings`). See [Multi-file YAML and `-Psource`](#multi-file-ya
 ./gradlew "deploy-job-My Job Name"
 ./gradlew "deploy-behaviour-Test"
 ./gradlew "deploy-workflow-My Workflow Name"
+./gradlew "deploy-workflow-My Workflow Name" --onDuplicate=fail
+./gradlew "deploy-workflow-My Workflow Name" --onDuplicate=update
 ./gradlew deploy-script-manager-acme-dev-ConsoleScript1.groovy
 ```
 
@@ -891,25 +893,61 @@ Listeners are identified by `description`. Script fields and jobs by `name`. Scr
 
 On Windows, use `gradlew.bat` instead of `./gradlew`.
 
+### `--onDuplicate` (workflow functions only)
+
+JCMA can mint Cloud uuids for legacy workflow functions that do not match the ids in migration yaml (Script Registry
+export). Deploying then creates duplicates instead of updating the disabled JCMA configs. Workflow deploy tasks accept:
+
+```bash
+./gradlew "deploy-workflow-My Workflow Name" --onDuplicate=fail
+./gradlew "deploy-workflow-My Workflow Name" --onDuplicate=update
+```
+
+- Matching: among existing Jira peers whose id is not in the yaml, with the same `className`, adopt when both
+  descriptions are non-empty and equal and that description uniquely identifies one Jira peer. Empty description
+  never matches; description ties refuse and list all peers of that type (Connect + Forge SR rules). User-facing
+  errors say "type" / short name (`UpdateIssue`), not "undeclared" / FQCN; ambiguous yaml listings include every
+  yaml rule that would deploy as new (not only the failing type group).
+- Failure / adoption / ambiguous messages label each rule with `#N of M` among yaml (or Jira) rules of that type on
+  the transition, plus a description/expression hint when available — UI titles alone are often identical.
+- `fail`: abort; each match is listed in the thrown failure message (yaml id, cloud id, enabled, edit URL) — not via
+  Gradle lifecycle logs alone. Supported with mapped (placeholder) deploys; use it to discover Cloud ids, then edit
+  `mappings-*.json` manually if needed.
+- `update`: adopt the cloud `parameters.id` (and sync config `uuid`), then run the normal merge/update so the existing
+  function is updated in place. After a successful deploy, rewrite source yaml under `cloud/src/main/resources` (not
+  `build/mapped/…`): keep the old id as `# legacyId: "…"` above the new `id: "…"`. **Refused** when deploying mapped
+  output — use `fail`, then edit `mappings-*.json` manually.
+- `--onDuplicate` (fail or update) is refused when more than 20 workflows are in scope (no multi-batch + onDuplicate).
+- Unreadable existing Jira SR configs (missing/unreadable `className`, unless a CONDITION/VALIDATOR has a non-blank
+  `expression` — then defaulted to `GenericWorkflowActionConfig`) abort `--onDuplicate` when yaml would deploy a new
+  id on that transition — never silently create a duplicate.
+- Condition placement: adopting an id feeds the normal condition merge. If yaml places a condition flat/in a different
+  group than JCMA did on Jira, the merge may move the rule between root and groups (ALL/ANY semantics can change).
+  Intentional — JCMA placement is treated as authoritative.
+- Other extension types are not supported yet; passing `--onDuplicate` to non-workflow tasks (or `deploy-all` with
+  non-workflow configs in scope) fails fast.
+- Without `--onDuplicate`, behaviour is unchanged: unmatched ids deploy as new functions.
+
 ## Supported Features
 
-| Feature                    | Supported | Notes                                                      |
-|----------------------------|-----------|------------------------------------------------------------|
-| Listeners                  | Yes       |                                                            |
-| Script Fields              | Yes       |                                                            |
-| Jobs / Escalation Services | Yes       | Escalation services use `jobs` key with a `jql` field      |
-| Behaviours                 | Yes       | TypeScript only; two behaviours cannot share the same name |
-| Workflows                  | Yes       | Condition groups are now supported                         |
-| Script Manager             | Yes       |                                                            |
-| REST Endpoints             | No        | Not available in Cloud. Use ScriptRunner Connect           |
-| UI Fragments               | No        | Planned                                                    |
-| JQL Functions              | No        | Planned                                                    |
-| Built-in Scripts           | N/A       | Nothing to configure in Cloud                              |
+| Feature                    | Supported | Notes                                                                 |
+|----------------------------|-----------|-----------------------------------------------------------------------|
+| Listeners                  | Yes       |                                                                       |
+| Script Fields              | Yes       |                                                                       |
+| Jobs / Escalation Services | Yes       | Escalation services use `jobs` key with a `jql` field                 |
+| Behaviours                 | Yes       | TypeScript only; two behaviours cannot share the same name            |
+| Workflows                  | Yes       | Condition groups; `--onDuplicate=fail` / `update` for legacy JCMA ids |
+| Script Manager             | Yes       |                                                                       |
+| REST Endpoints             | No        | Not available in Cloud. Use ScriptRunner Connect                      |
+| UI Fragments               | No        | Planned                                                               |
+| JQL Functions              | No        | Planned                                                               |
+| Built-in Scripts           | N/A       | Nothing to configure in Cloud                                         |
 
 ## Important Constraints
 
 - Workflows must already exist in the target Cloud instance (typically migrated via Jira Cloud Migration Assistant)
 - Unmatched YAML transitions (name/statuses not found on Jira) warn and skip their functions; build still succeeds — check logs
+- `--onDuplicate` is workflow-only; refuse `update` when deploying mapped output; refuse either mode when >20 workflows in scope
 - Behaviours use TypeScript, not Groovy. Scripts go in `cloud/src/main/typescript/`
 - Prefer splitting large config into multiple `*.yaml` under `resources/`; use `-Psource` to scope deploy/tasks (not pullMappings)
 - Strongly prefer the `file` attribute over `path` for all features except behaviours (keeps scripts in Script Manager)
@@ -924,7 +962,7 @@ Edit `settings.gradle` and change the version in:
 
 ```gradle
 plugins {
-    id 'com.adaptavist.scriptrunner.migration-settings' version '1.6.0'
+    id 'com.adaptavist.scriptrunner.migration-settings' version '1.7.1'
 }
 ```
 
