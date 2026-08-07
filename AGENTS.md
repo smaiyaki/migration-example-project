@@ -903,8 +903,11 @@ export). Deploying then creates duplicates instead of updating the disabled JCMA
 ./gradlew "deploy-workflow-My Workflow Name" --onDuplicate=update
 ```
 
-- Matching uses transition + function type + config `className`, tie-breaking by `description`. Ambiguous matches
-  (same className, description did not uniquely disambiguate) fail the deploy; no id is adopted.
+- Matching: among existing Jira peers whose id is not in the yaml, with the same `className`, adopt when both
+  descriptions are non-empty and equal and that description uniquely identifies one Jira peer. Empty description
+  never matches; description ties refuse and list all peers of that type (Connect + Forge SR rules). User-facing
+  errors say "type" / short name (`UpdateIssue`), not "undeclared" / FQCN; ambiguous yaml listings include every
+  yaml rule that would deploy as new (not only the failing type group).
 - Failure / adoption / ambiguous messages label each rule with `#N of M` among yaml (or Jira) rules of that type on
   the transition, plus a description/expression hint when available — UI titles alone are often identical.
 - `fail`: abort; each match is listed in the thrown failure message (yaml id, cloud id, enabled, edit URL) — not via
@@ -915,8 +918,9 @@ export). Deploying then creates duplicates instead of updating the disabled JCMA
   `build/mapped/…`): keep the old id as `# legacyId: "…"` above the new `id: "…"`. **Refused** when deploying mapped
   output — use `fail`, then edit `mappings-*.json` manually.
 - `--onDuplicate` (fail or update) is refused when more than 20 workflows are in scope (no multi-batch + onDuplicate).
-- Undecodable undeclared Jira SR configs (missing/unreadable `className`) abort `--onDuplicate` when yaml would deploy
-  a new id on that transition — never silently create a duplicate.
+- Unreadable existing Jira SR configs (missing/unreadable `className`, unless a CONDITION/VALIDATOR has a non-blank
+  `expression` — then defaulted to `GenericWorkflowActionConfig`) abort `--onDuplicate` when yaml would deploy a new
+  id on that transition — never silently create a duplicate.
 - Condition placement: adopting an id feeds the normal condition merge. If yaml places a condition flat/in a different
   group than JCMA did on Jira, the merge may move the rule between root and groups (ALL/ANY semantics can change).
   Intentional — JCMA placement is treated as authoritative.
