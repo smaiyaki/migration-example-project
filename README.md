@@ -346,8 +346,8 @@ Confirm them against the endpoints above, or use keys and names and let the tool
 
 ### What JSM behaviours will not accept
 
-- **No `"all"` wildcard**, on either side of the mapping. Map every service desk and request type explicitly. A
-  wildcard would be accepted and then match nothing.
+- **No `"all"` wildcard**, on either side of the mapping. Map every service desk and request type explicitly. Deploy
+  rejects `"all"` before it authenticates. Do not rely on it matching nothing.
 - **No mixing Jira and JSM view types in one behaviour.** `product` must agree with every view type declared — `jsm`
   for `JSMRequestCreate`, `jira` for `GIC`, `IssueView` and `IssueTransition`. Leaving `product` out means `jira`, so
   a portal behaviour that forgets it will be rejected with a message telling you to add `product: jsm`.
