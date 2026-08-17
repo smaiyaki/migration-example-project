@@ -52,11 +52,11 @@ Large single YAML files are hard to manage. Configuration can live in one `exten
 
 The same recursive, `source`-scoped scan drives **task registration**, `./gradlew tasks`, and **deploy**:
 
-| Mode | `-Psource` | Scope |
-|------|------------|--------|
-| Default | omitted | All `*.yaml` under `resources/` (recursive). A single yaml of any name still works. |
-| Single file | `-Psource=extensions.yaml` | That one file only (no cross-file merge/validation). |
-| Subdirectory | `-Psource=jobs/` or `-Psource=team-a/` | All `*.yaml` under that dir (recursive). |
+| Mode         | `-Psource`                             | Scope                                                                               |
+|--------------|----------------------------------------|-------------------------------------------------------------------------------------|
+| Default      | omitted                                | All `*.yaml` under `resources/` (recursive). A single yaml of any name still works. |
+| Single file  | `-Psource=extensions.yaml`             | That one file only (no cross-file merge/validation).                                |
+| Subdirectory | `-Psource=jobs/` or `-Psource=team-a/` | All `*.yaml` under that dir (recursive).                                            |
 
 `-Psource` paths are relative to `cloud/src/main/resources/` and must stay under that directory.
 
@@ -348,12 +348,12 @@ Groovy.
 
 **`viewTypes` values** (publicly supported):
 
-| Value              | Screen                        | Requires           |
-|--------------------|-------------------------------|--------------------|
-| `GIC`              | Global Issue Create           | `product: jira`    |
-| `IssueView`        | Issue view                    | `product: jira`    |
-| `IssueTransition`  | Issue transition              | `product: jira`    |
-| `JSMRequestCreate` | JSM customer portal, create   | `product: jsm`     |
+| Value              | Screen                      | Requires        |
+|--------------------|-----------------------------|-----------------|
+| `GIC`              | Global Issue Create         | `product: jira` |
+| `IssueView`        | Issue view                  | `product: jira` |
+| `IssueTransition`  | Issue transition            | `product: jira` |
+| `JSMRequestCreate` | JSM customer portal, create | `product: jsm`  |
 
 Agent view types exist in the model but are gated behind an Atlassian feature flag and are **not** publicly available.
 Do not document them until that flag ships.
@@ -374,21 +374,29 @@ different here** — it is service desk → request types, not project → work 
 **`mappings` format:** Map of service desk project key (or numeric service desk ID) → list of request type names (or
 numeric request type IDs). Supports `%requestType-alias%` placeholders.
 
-| Rule                | Detail                                                                                            |
-|---------------------|---------------------------------------------------------------------------------------------------|
-| Key                 | Service desk project key, resolved to a **service desk ID** — not a Jira project ID               |
-| Values              | Request type names, resolved per service desk. The same name in another desk will not match       |
-| Key case            | Case-insensitive (`sup` and `SUP` both work). Request type **names are case-sensitive**           |
-| Numeric passthrough | Numeric keys and values are used as-is, with no lookup                                            |
-| No wildcard         | `"all"` is rejected for both keys and values — map every service desk and request type explicitly |
+| Rule        | Detail                                                                                            |
+|-------------|---------------------------------------------------------------------------------------------------|
+| Key         | Service desk project key, resolved to a **service desk ID** — not a Jira project ID               |
+| Values      | Request type names, resolved per service desk. The same name in another desk will not match       |
+| Key case    | Case-insensitive (`sup` and `SUP` both work). Request type **names are case-sensitive**           |
+| Numeric IDs | Accepted and **verified**: the ID must exist, and a request type ID must belong to that desk      |
+| No wildcard | `"all"` is rejected for both keys and values — map every service desk and request type explicitly |
 
 Resolution uses `/rest/servicedeskapi/servicedesk` and `/rest/servicedeskapi/servicedesk/<id>/requesttype`, so the
 authenticated user needs access to each service desk.
 
-Failure messages differ between the two lookups. An unknown **request type name** lists that desk's available request
-types. An unknown **service desk key** does not list anything — it reports the key, the site URL, and the user, and
-suggests checking the project exists and is accessible. Numeric IDs on either side are never looked up, so a wrong
-one produces no error at all.
+Every key and value is checked, including numeric IDs — nothing is passed through unverified. Failure messages differ
+by case:
+
+| Bad input                                 | Message                                                                                                          |
+|-------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| Unknown service desk **key**              | Reports the key, site URL and user; suggests checking the project exists. No list                                |
+| Numeric key that is not a service desk ID | `'<id>' is not a service desk ID on <site>. Use the service desk's project key rather than the Jira project ID.` |
+| Unknown request type **name**             | Lists that desk's available request types                                                                        |
+| Request type **ID** from a different desk | `Request type ID '<id>' does not belong to service desk '<key>'`, plus the available list                        |
+
+The numeric service desk check specifically catches passing a **Jira project ID** where a service desk ID is required
+— the two are easily confused, and before validation an ID that pointed at nothing deployed green and never fired.
 
 ```yaml
 behaviours:
@@ -408,7 +416,7 @@ behaviours:
         affectedFields:
           - "summary"
     mappings:
-      "<SD>":                              # service desk project key, or numeric service desk ID
+      "<SD>": # service desk project key, or numeric service desk ID
         - "<Request Type Name>"            # or a numeric ID, or "%requestType-alias%"
 ```
 
@@ -1005,11 +1013,14 @@ export). Deploying then creates duplicates instead of updating the disabled JCMA
 ## Important Constraints
 
 - Workflows must already exist in the target Cloud instance (typically migrated via Jira Cloud Migration Assistant)
-- Unmatched YAML transitions (name/statuses not found on Jira) warn and skip their functions; build still succeeds — check logs
-- `--onDuplicate` is workflow-only; refuse `update` when deploying mapped output; refuse either mode when >20 workflows in scope
+- Unmatched YAML transitions (name/statuses not found on Jira) warn and skip their functions; build still succeeds —
+  check logs
+- `--onDuplicate` is workflow-only; refuse `update` when deploying mapped output; refuse either mode when >20 workflows
+  in scope
 - Behaviours use TypeScript, not Groovy. Scripts go in `cloud/src/main/typescript/`
 - JSM behaviours need `product: jsm`; their `mappings` are service desk → request types, and reject `"all"` wildcards
-- Prefer splitting large config into multiple `*.yaml` under `resources/`; use `-Psource` to scope deploy/tasks (not pullMappings)
+- Prefer splitting large config into multiple `*.yaml` under `resources/`; use `-Psource` to scope deploy/tasks (not
+  pullMappings)
 - Strongly prefer the `file` attribute over `path` for all features except behaviours (keeps scripts in Script Manager)
 - Escalation services share the `jobs` YAML key but appear separately in the ScriptRunner Cloud UI
 - Always remind users to replace placeholder account IDs, project keys, project IDs, and issue type IDs with real values

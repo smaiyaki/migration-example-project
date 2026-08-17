@@ -341,8 +341,9 @@ behaviour it is **service desk → request types**:
 If a request type name is wrong, the error lists the request types available on that service desk. If the service desk
 key itself is wrong, the error names the key and asks you to check the project exists and is accessible.
 
-Numeric service desk and request type IDs are used exactly as given, with no lookup — so they are not checked for you.
-Confirm them against the endpoints above, or use keys and names and let the tool resolve them.
+Numeric IDs are checked too, not taken on trust. A numeric service desk key must be a real service desk ID — passing a
+**Jira project ID** here is an easy mistake, and deploy calls it out rather than creating a Behaviour that quietly
+never fires. A numeric request type ID must belong to the service desk it is listed under.
 
 ### What JSM behaviours will not accept
 
