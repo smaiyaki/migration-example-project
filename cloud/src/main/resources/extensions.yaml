@@ -157,6 +157,30 @@ behaviours:
         - "Task" # This will include _all_ Work Item Types named "Task". To be more specific and target particular project's Task Work Item Type, use the unique identifier retrieved from the REST API.
         - "Story"
         - "Bug"
+  - name: "Test Behavior 3 - JSM portal create"
+    description: "A Behaviour that runs on the Jira Service Management customer portal"
+    uuid: "7c3f9a1e-5b42-4d8e-9f16-2a7b8c4d5e60"
+    enabled: true
+    # product defaults to "jira". Set it to "jsm" for behaviours that run on the customer portal.
+    # It must agree with the viewTypes below - Jira and JSM view types cannot be mixed in one Behaviour.
+    product: jsm
+    config:
+      - fieldName: ""
+        fieldUuid: "b1d4e6f8-3c07-4a95-8e21-6f0a9b3c7d54"
+        path: jsm/PortalSummaryBehaviour.ts
+        event:
+          - "ONLOAD"
+        viewTypes:
+          - "JSMRequestCreate" # The customer portal request-create form
+        affectedFields:
+          - "summary"
+    # For a JSM Behaviour, mappings are service desk -> request types, NOT project -> work item types.
+    # The key is a service desk project key (resolved to a service desk ID), and the values are
+    # request type names scoped to that desk. Numeric IDs are accepted on either side and used as-is.
+    # The "all" wildcard is NOT supported here - list every service desk and request type explicitly.
+    mappings:
+      "SUP":
+        - "Report a bug"
 
 workflows:
   - name: "Workflow with file scripts"

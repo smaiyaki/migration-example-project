@@ -286,7 +286,7 @@ To update, open the `settings.gradle` file in this project and edit this set of 
 
 ```gradle
 plugins {
-    id 'com.adaptavist.scriptrunner.migration-settings' version '1.7.1' // Change this version number to the latest release
+    id 'com.adaptavist.scriptrunner.migration-settings' version '1.8.0' // Change this version number to the latest release
 }
 ```
 
@@ -299,6 +299,59 @@ to get the latest version number of the plugin.
 # Further information
 
 For further information read the [documentation on our website](https://docs.adaptavist.com/sms/).
+
+## Working with Jira Service Management behaviours
+
+Behaviours can run on the Jira Service Management customer portal as well as on Jira screens. Add `product: jsm` to the
+behaviour and use the `JSMRequestCreate` view type:
+
+```yaml
+behaviours:
+  - name: "Portal create helper"
+    uuid: "7c3f9a1e-5b42-4d8e-9f16-2a7b8c4d5e60"
+    description: "Runs on the customer portal request-create form"
+    enabled: true
+    product: jsm
+    config:
+      - fieldName: ""
+        fieldUuid: "b1d4e6f8-3c07-4a95-8e21-6f0a9b3c7d54"
+        path: jsm/PortalSummaryBehaviour.ts
+        event:
+          - "ONLOAD"
+        viewTypes:
+          - "JSMRequestCreate"
+        affectedFields:
+          - "summary"
+    mappings:
+      "SUP":
+        - "Report a bug"
+```
+
+**`mappings` means something different for JSM.** For a Jira behaviour it is project → work item types. For a JSM
+behaviour it is **service desk → request types**:
+
+- The key is a **service desk project key**, resolved to a service desk ID against
+  `/rest/servicedeskapi/servicedesk`. Keys are case-insensitive, so `sup` and `SUP` both work.
+- The values are **request type names**, resolved per service desk against
+  `/rest/servicedeskapi/servicedesk/<id>/requesttype`. Names are case-sensitive, and a name that exists in a
+  *different* service desk will not match — request types are scoped to their desk.
+- `%requestType-alias%` placeholders work, and resolve to numeric IDs before deploy — see [MAPPING.md](MAPPING.md).
+- Whoever runs the deploy needs access to each service desk, or resolution fails.
+
+If a request type name is wrong, the error lists the request types available on that service desk. If the service desk
+key itself is wrong, the error names the key and asks you to check the project exists and is accessible.
+
+Numeric IDs are checked too, not taken on trust. A numeric service desk key must be a real service desk ID — passing a
+**Jira project ID** here is an easy mistake, and deploy calls it out rather than creating a Behaviour that quietly
+never fires. A numeric request type ID must belong to the service desk it is listed under.
+
+### What JSM behaviours will not accept
+
+- **No `"all"` wildcard**, on either side of the mapping. Map every service desk and request type explicitly. Deploy
+  rejects `"all"` before it authenticates. Do not rely on it matching nothing.
+- **No mixing Jira and JSM view types in one behaviour.** `product` must agree with every view type declared — `jsm`
+  for `JSMRequestCreate`, `jira` for `GIC`, `IssueView` and `IssueTransition`. Leaving `product` out means `jira`, so
+  a portal behaviour that forgets it will be rejected with a message telling you to add `product: jsm`.
 
 ## Working with workflows
 
