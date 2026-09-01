@@ -1,0 +1,390 @@
+{
+  "projectRoles": {
+    "projectRole-viewer": {
+      "10002": "10002"
+    }
+  },
+  "customFields": {
+    "customField-customer": {
+      "customfield_15902": "customfield_10122"
+    },
+    "customField-completionPercentage": {
+      "customfield_16600": "customfield_10242"
+    },
+    "customField-developmentTimeSpent": {
+      "customfield_15903": "customfield_10186"
+    },
+    "customField-classification": {
+      "customfield_15922": "customfield_10228"
+    },
+    "customField-upgSubtasksDaily": {
+      "customfield_17901": "customfield_10339"
+    },
+    "customField-deployBinForUpg": {
+      "customfield_17903": "customfield_10341"
+    },
+    "customField-upgAllSubtasks": {
+      "customfield_17905": "customfield_10349"
+    },
+    "customField-pdmDevTime": {
+      "customfield_18000": "customfield_10345"
+    },
+    "customField-billableHours": {
+      "customfield_18500": "customfield_10348"
+    },
+    "customField-lastCommentDate": {
+      "customfield_17800": "customfield_10257"
+    },
+    "customField-lastCommentAuthor": {
+      "customfield_17801": "customfield_10258"
+    },
+    "customField-lastCommentSnippet": {
+      "customfield_17802": "customfield_10259"
+    },
+    "customField-startDate": {
+      "customfield_12906": "customfield_10124"
+    },
+    "customField-devCategory": {
+      "customfield_17000": "customfield_10208"
+    },
+    "customField-customers": {
+      "customfield_15901": "customfield_10207"
+    },
+    "customField-sveFixVersions": {
+      "customfield_17500": "TODO"
+    },
+    "customField-sveAffectedVersions": {
+      "customfield_17504": "TODO"
+    },
+    "customField-application": {
+      "customfield_15908": "customfield_10175"
+    },
+    "customField-contactPerson": {
+      "customfield_15910": "customfield_10127"
+    },
+    "customField-scheduledDate": {
+      "customfield_14702": "customfield_10126"
+    },
+    "customField-budgetEstimated": {
+      "customfield_13800": "customfield_10132"
+    },
+    "customField-trainingDueDate": {
+      "customfield_14701": "customfield_10136"
+    },
+    "customField-dbServerName": {
+      "customfield_16100": "customfield_10261"
+    },
+    "customField-dbSid": {
+      "customfield_16101": "customfield_10262"
+    },
+    "customField-dbUser": {
+      "customfield_16102": "customfield_10263"
+    },
+    "customField-dbPassword": {
+      "customfield_16103": "customfield_10264"
+    },
+    "customField-developmentBranch": {
+      "customfield_16105": "customfield_10271"
+    },
+    "customField-environment": {
+      "customfield_16104": "customfield_10265"
+    },
+    "customField-environmentStage": {
+      "customfield_17400": "customfield_10268"
+    },
+    "customField-rdwebOptions": {
+      "customfield_16108": "customfield_10276"
+    },
+    "customField-satelliteApplications": {
+      "customfield_16109": "customfield_10277"
+    },
+    "customField-installedApplications": {
+      "customfield_16502": "customfield_10203"
+    },
+    "customField-webApplications": {
+      "customfield_16501": "customfield_10206"
+    },
+    "customField-activity": {
+      "customfield_10701": "customfield_10128"
+    },
+    "customField-endDate": {
+      "customfield_12907": "customfield_10164"
+    },
+    "customField-biEnvironment": {
+      "customfield_15907": "customfield_10146"
+    },
+    "customField-whyNot": {
+      "customfield_16155": "customfield_10149"
+    },
+    "customField-billable": {
+      "customfield_13700": "customfield_10117"
+    },
+    "customField-gwsUsername": {
+      "customfield_10278": "customfield_10278"
+    },
+    "customField-gwsPassword": {
+      "customfield_10285": "customfield_10285"
+    },
+    "customField-gwsStation": {
+      "customfield_10266": "customfield_10266"
+    },
+    "customField-maUserLA": {
+      "customfield_10267": "customfield_10267"
+    },
+    "customField-maPassLA": {
+      "customfield_10288": "customfield_10288"
+    },
+    "customField-maWsLA": {
+      "customfield_10269": "customfield_10269"
+    },
+    "customField-maUserGA": {
+      "customfield_10290": "customfield_10290"
+    },
+    "customField-maPassGA": {
+      "customfield_10292": "customfield_10292"
+    },
+    "customField-maWsGA": {
+      "customfield_10294": "customfield_10294"
+    },
+    "customField-maUserSI": {
+      "customfield_10270": "customfield_10270"
+    },
+    "customField-maPassSI": {
+      "customfield_10296": "customfield_10296"
+    },
+    "customField-maWsSI": {
+      "customfield_10298": "customfield_10298"
+    },
+    "customField-maUserID": {
+      "customfield_10272": "customfield_10272"
+    },
+    "customField-maPassID": {
+      "customfield_10274": "customfield_10274"
+    },
+    "customField-maWsID": {
+      "customfield_10279": "customfield_10279"
+    },
+    "customField-mrsStation": {
+      "customfield_10280": "customfield_10280"
+    },
+    "customField-mrsUserLA": {
+      "customfield_10300": "customfield_10300"
+    },
+    "customField-mrsPassLA": {
+      "customfield_10303": "customfield_10303"
+    },
+    "customField-mrsStationLA": {
+      "customfield_10281": "customfield_10281"
+    },
+    "customField-mrsUserGA": {
+      "customfield_10282": "customfield_10282"
+    },
+    "customField-mrsPassGA": {
+      "customfield_10305": "customfield_10305"
+    },
+    "customField-mrsStationGA": {
+      "customfield_10307": "customfield_10307"
+    },
+    "customField-mrsUserCI": {
+      "customfield_10309": "customfield_10309"
+    },
+    "customField-mrsPassCI": {
+      "customfield_10311": "customfield_10311"
+    },
+    "customField-mrsStationCI": {
+      "customfield_10312": "customfield_10312"
+    },
+    "customField-mrsUserIDA": {
+      "customfield_10313": "customfield_10313"
+    },
+    "customField-mrsPassIDA": {
+      "customfield_10283": "customfield_10283"
+    },
+    "customField-mrsStationIDA": {
+      "customfield_10314": "customfield_10314"
+    },
+    "customField-wpUsername": {
+      "customfield_10315": "customfield_10315"
+    },
+    "customField-wpPassword": {
+      "customfield_10284": "customfield_10284"
+    },
+    "customField-wpStation": {
+      "customfield_10316": "customfield_10316"
+    },
+    "customField-uhfStation": {
+      "customfield_10286": "customfield_10286"
+    },
+    "customField-mfsStation": {
+      "customfield_10287": "customfield_10287"
+    },
+    "customField-mfsUsername": {
+      "customfield_10289": "customfield_10289"
+    },
+    "customField-mfsPassword": {
+      "customfield_10317": "customfield_10317"
+    },
+    "customField-wcpiStation": {
+      "customfield_10318": "customfield_10318"
+    },
+    "customField-wcpiUsername": {
+      "customfield_10293": "customfield_10293"
+    },
+    "customField-wcpiPassword": {
+      "customfield_10295": "customfield_10295"
+    },
+    "customField-rsStation": {
+      "customfield_10275": "customfield_10275"
+    },
+    "customField-satApiGwBranch": {
+      "customfield_10319": "customfield_10319"
+    },
+    "customField-satAbsMgBranch": {
+      "customfield_10297": "customfield_10297"
+    },
+    "customField-satLaUser": {
+      "customfield_10299": "customfield_10299"
+    },
+    "customField-satLaPass": {
+      "customfield_10320": "customfield_10320"
+    },
+    "customField-satLaStation": {
+      "customfield_10321": "customfield_10321"
+    },
+    "customField-satGaUser": {
+      "customfield_10301": "customfield_10301"
+    },
+    "customField-satGaPass": {
+      "customfield_10322": "customfield_10322"
+    },
+    "customField-satGaStation": {
+      "customfield_10302": "customfield_10302"
+    },
+    "customField-satCtUser": {
+      "customfield_10304": "customfield_10304"
+    },
+    "customField-satCtPass": {
+      "customfield_10306": "customfield_10306"
+    },
+    "customField-satCtStation": {
+      "customfield_10323": "customfield_10323"
+    },
+    "customField-satIdUser": {
+      "customfield_10308": "customfield_10308"
+    },
+    "customField-satIdPass": {
+      "customfield_10324": "customfield_10324"
+    },
+    "customField-satIdStation": {
+      "customfield_10325": "customfield_10325"
+    },
+    "customField-satInfinityBranch": {
+      "customfield_10310": "customfield_10310"
+    },
+    "customField-satAbsMABranch": {
+      "customfield_10326": "customfield_10326"
+    },
+    "customField-cvssScore": {
+      "customfield_17501": "TODO"
+    },
+    "customField-cveId": {
+      "customfield_17503": "TODO"
+    },
+    "customField-cveSeverity": {
+      "customfield_17502": "TODO"
+    },
+    "customField-cancellationReason": {
+      "customfield_12007": "customfield_10130"
+    },
+    "customField-createReleaseNotes": {
+      "customfield_11901": "customfield_10185"
+    },
+    "customField-postCalculation": {
+      "customfield_13000": "customfield_10189"
+    },
+    "customField-devopsCategory": {
+      "customfield_16702": "customfield_10241"
+    }
+  },
+  "customFieldOptions": {
+    "customFieldOption-applicationBin": {
+      "38": "TODO"
+    },
+    "customFieldOption-applicationAbsnDeploy": {
+      "29": "TODO"
+    },
+    "customFieldOption-cancelReasonCustomerCancelled": {
+      "10095": "10095"
+    },
+    "customFieldOption-cancelReasonDeploymentIssueIncomplete": {
+      "10089": "10089"
+    },
+    "customFieldOption-cancelReasonDuplicate": {
+      "10087": "10087"
+    },
+    "customFieldOption-cancelReasonAssumedToBeSolved": {
+      "10098": "10098"
+    },
+    "customFieldOption-cancelReasonConfigOrInstallProblem": {
+      "10093": "10093"
+    },
+    "customFieldOption-cancelReasonNoFeedbackFromCustomer": {
+      "10096": "10096"
+    },
+    "customFieldOption-cancelReasonNotRequestedAnymoreByCustomer": {
+      "10099": "10099"
+    },
+    "customFieldOption-cancelReasonNotPartOfProjectPlan": {
+      "10094": "10094"
+    },
+    "customFieldOption-cancelReasonUnsupported": {
+      "10092": "10092"
+    },
+    "customFieldOption-cancelReasonWorksAsExpected": {
+      "10090": "10090"
+    },
+    "customFieldOption-cancelReasonSolvedInHigherVersion": {
+      "10100": "10100"
+    },
+    "customFieldOption-cancelReasonNewFunctionality": {
+      "10104": "10104"
+    },
+    "customFieldOption-cancelReasonSolvedByOtherTickets": {
+      "10105": "10105"
+    },
+    "customFieldOption-cancelReasonNotRequestedAnymore": {
+      "10097": "10097"
+    },
+    "customFieldOption-cancelReasonCannotReproduce": {
+      "10088": "10088"
+    },
+    "customFieldOption-cancelReasonNotOccurringAnymore": {
+      "10091": "10091"
+    },
+    "customFieldOption-cancelReasonNoCustomerResponse": {
+      "10101": "10101"
+    },
+    "customFieldOption-cancelReasonToSolveInFuturePatch": {
+      "10102": "10102"
+    },
+    "customFieldOption-cancelReasonWrongClone": {
+      "10103": "10103"
+    }
+  },
+  "projects": {
+    "project-cul002": {
+      "CUL002": "CUL002"
+    },
+    "project-ilu002": {
+      "ILU002": "ILU002"
+    }
+  },
+  "issueTypes": {
+    "issueType-task": {
+      "TASK_ISSUE_TYPE_ID": "10004"
+    },
+    "issueType-writingReleaseNotes": {
+      "WRITING_RELEASE_NOTES_TYPE_ID": "10078"
+    }
+  }
+}
